@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   `java-gradle-plugin`
@@ -28,6 +29,31 @@ gradlePlugin {
       implementationClass = "dev.zacsweers.autoservice.gradle.AutoServiceKspGradlePlugin"
     }
   }
+}
+
+sourceSets {
+  main.configure {
+    java.srcDir(project.file("$buildDir/generated/sources/version-templates/kotlin/main"))
+  }
+}
+
+val version = providers.gradleProperty("VERSION_NAME")
+  .forUseAtConfigurationTime()
+  .get()
+val copyVersionTemplatesProvider = tasks.register<Copy>("copyVersionTemplates") {
+  val templatesMap = mapOf(
+    "autoServiceKspVersion" to version,
+    "autoServiceVersion" to Dependencies.AutoService.version
+  )
+  inputs.property("buildversions", templatesMap.hashCode())
+  from(layout.projectDirectory.dir("version-templates"))
+  into(project.layout.buildDirectory.dir("generated/sources/version-templates/kotlin/main"))
+  expand(templatesMap)
+  filteringCharset = "UTF-8"
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+  dependsOn(copyVersionTemplatesProvider)
 }
 
 dependencies {

@@ -41,11 +41,10 @@ public abstract class AutoServiceKspExtension @Inject constructor(objects: Objec
   /**
    * Specifies the version of auto-service-ksp to use. Defaults to the version of the gradle plugin.
    */
-  // TODO need to pipe in the version it's built with
   public val autoServiceKspVersion: Property<String> = objects.property(String::class.java)
-    .convention("0.1.0")
+    .convention(Versions.AUTO_SERVICE_KSP_VERSION)
 
   /** Specifies the version of auto-service-annotations to use. */
   public val autoServiceVersion: Property<String> = objects.property(String::class.java)
-    .convention("1.0-rc7")
+    .convention(Versions.AUTO_SERVICE_VERSION)
 }
