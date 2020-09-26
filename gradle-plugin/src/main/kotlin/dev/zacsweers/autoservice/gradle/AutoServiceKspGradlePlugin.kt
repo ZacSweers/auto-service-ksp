@@ -3,8 +3,8 @@ package dev.zacsweers.autoservice.gradle
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.provider.Property
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.language.jvm.tasks.ProcessResources
 import javax.inject.Inject
 
@@ -14,8 +14,7 @@ public abstract class AutoServiceKspGradlePlugin : Plugin<Project> {
     project.run {
       pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
         // Necessary to ensure the generated service file is included in the jar
-        extensions.getByType(
-          JavaPluginConvention::class.java).sourceSets.configureEach { sourceSet ->
+        extensions.getByType(SourceSetContainer::class.java).configureEach { sourceSet ->
           sourceSet.resources {
             it.srcDir("build/generated/ksp/src/${sourceSet.name}/resources")
           }
