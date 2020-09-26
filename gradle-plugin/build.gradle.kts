@@ -25,7 +25,7 @@ plugins {
 gradlePlugin {
   plugins {
     plugins.create("auto-service-ksp") {
-      id = "dev.zacsweers.autoservice"
+      id = "dev.zacsweers.autoservice.ksp"
       implementationClass = "dev.zacsweers.autoservice.gradle.AutoServiceKspGradlePlugin"
     }
   }

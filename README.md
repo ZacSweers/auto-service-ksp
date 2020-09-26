@@ -10,7 +10,7 @@ Simply add the auto-service-ksp Gradle Plugin.
 plugins {
   id("symbol-processing") version "<version>"
   kotlin("jvm")
-  id("dev.zacsweers.autoservice") version "<version>"
+  id("dev.zacsweers.autoservice.ksp") version "<version>"
   // ...
 }
 
