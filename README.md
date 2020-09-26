@@ -4,12 +4,32 @@ A [KSP](https://github.com/google/ksp) implementation of [AutoService](https://g
 
 ## Usage
 
-Annotate your service implementation with `@AutoService` as your normally would, then add this
-project as a `ksp` dependency.
+Simply add the auto-service-ksp Gradle Plugin.
 
 ```kotlin
 plugins {
-  id("symbol-processing") version "version here"
+  id("symbol-processing") version "<version>"
+  kotlin("jvm")
+  id("auto-service-ksp") version "<version>"
+  // ...
+}
+
+// Optional - configure auto-service or auto-service-ksp versions used
+autoServiceKsp {
+  autoServiceVersion.set("<version>")
+  autoServiceKspVersion.set("<version>")
+}
+```
+
+Then annotate your service implementation with `@AutoService` as your normally would in source.
+
+### Manual configuration
+
+If you don't want to use the Gradle plugin, you can manually configure the processor with some extra steps.
+
+```kotlin
+plugins {
+  id("symbol-processing") version "<version>"
   kotlin("jvm")
   // ...
 }
@@ -44,8 +64,8 @@ tasks.named<ProcessResources>("processResources").configure {
 
 ## Caveats
 
-The AutoService annotation processor will merge existing service files, but this is not currently
-implemented in this KSP implementation yet.
+While the AutoService _annotation processor_ will merge existing service files, but this is not 
+currently implemented in this KSP implementation yet.
 
 ## Advanced
 
