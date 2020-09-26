@@ -31,3 +31,5 @@ pluginManagement {
 }
 
 rootProject.name = "auto-service-ksp-root"
+include(":processor")
+include(":gradle-plugin")
