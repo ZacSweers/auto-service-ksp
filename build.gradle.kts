@@ -33,7 +33,20 @@ plugins {
 repositories {
   mavenCentral()
   google()
-  jcenter()
+  // Required for Dokka
+  exclusiveContent {
+    forRepository {
+      maven {
+        name = "JCenter"
+        setUrl("https://jcenter.bintray.com/")
+      }
+    }
+    filter {
+      includeModule("org.jetbrains.kotlinx", "kotlinx-html-jvm")
+      includeGroup("org.jetbrains.dokka")
+      includeModule("org.jetbrains", "markdown")
+    }
+  }
 }
 
 tasks.named<DokkaTask>("dokkaHtml") {
