@@ -6,6 +6,7 @@ A [KSP](https://github.com/google/ksp) implementation of [AutoService](https://g
 
 Simply add the auto-service-ksp Gradle Plugin.
 
+[![Maven Central](https://img.shields.io/maven-central/v/dev.zacsweers.autoservice/auto-service-ksp.svg)](https://mvnrepository.com/artifact/dev.zacsweers.autoservice/auto-service-ksp)
 ```kotlin
 plugins {
   id("symbol-processing") version "<version>"
