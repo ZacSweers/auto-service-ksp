@@ -125,7 +125,7 @@ public class AutoServiceSymbolProcessor : SymbolProcessor {
         log("New service file contents: $allServices")
         val ksFiles = foundImplementers.map { it.second }
         log("Originating files: ${ksFiles.map(KSFile::fileName)}")
-        val dependencies = Dependencies(false, *ksFiles.toTypedArray())
+        val dependencies = Dependencies(true, *ksFiles.toTypedArray())
         codeGenerator.createNewFile(
           dependencies,
           "",
