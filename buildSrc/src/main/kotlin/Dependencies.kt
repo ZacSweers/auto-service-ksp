@@ -25,13 +25,13 @@ object Dependencies {
   }
 
   object Kotlin {
-    const val version = "1.4.10"
-    const val dokkaVersion = "1.4.10"
+    const val version = "1.4.20"
+    const val dokkaVersion = "1.4.20"
     const val jvmTarget = "1.8"
     val defaultFreeCompilerArgs = listOf("-Xjsr305=strict", "-progressive")
 
     object Ksp {
-      const val version = "1.4.10-dev-experimental-20201110"
+      const val version = "1.4.20-dev-experimental-20201222"
       const val api = "com.google.devtools.ksp:symbol-processing-api:$version"
       const val ksp = "com.google.devtools.ksp:symbol-processing:$version"
     }
