@@ -8,10 +8,12 @@ import com.google.devtools.ksp.closestClassDeclaration
 import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.isLocal
 import com.google.devtools.ksp.processing.CodeGenerator
+import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSType
 import com.squareup.kotlinpoet.ClassName
 import java.io.IOException
@@ -26,14 +28,15 @@ public class AutoServiceSymbolProcessor : SymbolProcessor {
 
   /**
    * Maps the class names of service provider interfaces to the
-   * class names of the concrete classes which implement them.
+   * class names of the concrete classes which implement them plus their KSFile (for incremental
+   * processing).
    *
    * For example,
    * ```
    * "com.google.apphosting.LocalRpcService" -> "com.google.apphosting.datastore.LocalDatastoreService"
    * ```
    */
-  private val providers: Multimap<String, String> = HashMultimap.create()
+  private val providers: Multimap<String, Pair<String, KSFile>> = HashMultimap.create()
 
   private lateinit var codeGenerator: CodeGenerator
   private lateinit var logger: KSPLogger
@@ -87,7 +90,7 @@ public class AutoServiceSymbolProcessor : SymbolProcessor {
         for (providerType in providerInterfaces) {
           val providerDecl = providerType.declaration.closestClassDeclaration()!!
           if (checkImplementer(providerImplementer, providerType)) {
-            providers.put(providerDecl.toBinaryName(), providerImplementer.toBinaryName())
+            providers.put(providerDecl.toBinaryName(), providerImplementer.toBinaryName() to providerImplementer.containingFile!!)
           } else {
             val message = "ServiceProviders must implement their service provider interface. " +
               providerImplementer.qualifiedName +
@@ -116,10 +119,19 @@ public class AutoServiceSymbolProcessor : SymbolProcessor {
       log("Working on resource file: $resourceFile")
       try {
         val allServices: SortedSet<String> = Sets.newTreeSet()
-        val newServices: Set<String> = HashSet(providers[providerInterface])
+        val foundImplementers = providers[providerInterface]
+        val newServices: Set<String> = HashSet(foundImplementers.map { it.first })
         allServices.addAll(newServices)
         log("New service file contents: $allServices")
-        codeGenerator.createNewFile("", resourceFile, "").bufferedWriter().use { writer ->
+        val ksFiles = foundImplementers.map { it.second }
+        log("Originating files: ${ksFiles.map(KSFile::fileName)}")
+        val dependencies = Dependencies(true, *ksFiles.toTypedArray())
+        codeGenerator.createNewFile(
+          dependencies,
+          "",
+          resourceFile,
+          ""
+        ).bufferedWriter().use { writer ->
           for (service in allServices) {
             writer.write(service)
             writer.newLine()
