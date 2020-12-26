@@ -5,11 +5,10 @@ import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.kspSourcesDir
-import org.junit.Ignore
+import com.tschuchort.compiletesting.symbolProcessors
 import org.junit.Test
 import java.io.File
 
-@Ignore("Disabled until kotlin-compile-testing updates")
 class AutoServiceSymbolProcessorTest {
   @Test
   fun smokeTest() {
@@ -27,13 +26,13 @@ class AutoServiceSymbolProcessorTest {
     val compilation = KotlinCompilation().apply {
       sources = listOf(source)
       inheritClassPath = true
-//      symbolProcessors = listOf(AutoServiceSymbolProcessor())
+      symbolProcessors = listOf(AutoServiceSymbolProcessor())
     }
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     val generatedSourcesDir = compilation.kspSourcesDir
     val generatedFile = File(generatedSourcesDir,
-      "resources/META-INF/services/java.util.concurrent.Callable")
+      "resource/META-INF/services/java.util.concurrent.Callable")
     assertThat(generatedFile.exists()).isTrue()
     assertThat(generatedFile.readText()).isEqualTo("test.CustomCallable\n")
   }
