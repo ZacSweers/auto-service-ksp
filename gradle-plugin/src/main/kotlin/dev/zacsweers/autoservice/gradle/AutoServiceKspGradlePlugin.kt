@@ -16,7 +16,7 @@ public abstract class AutoServiceKspGradlePlugin : Plugin<Project> {
         // Necessary to ensure the generated service file is included in the jar
         extensions.getByType(SourceSetContainer::class.java).configureEach { sourceSet ->
           sourceSet.resources {
-            it.srcDir("build/generated/ksp/src/${sourceSet.name}/resources")
+            it.srcDir("build/generated/ksp/${sourceSet.name}/resources")
           }
         }
 
