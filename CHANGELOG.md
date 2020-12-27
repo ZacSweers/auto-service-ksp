@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Version 0.2.1
+-------------
+
+_2020-12-26_
+
+* Small Gradle bugfix for KSP `1.4.20-dev-experimental-20201222`'s new generated dirs location, 
+  which no longer includes a `src/` intermediate dir.
+
 Version 0.2.0
 -------------
 
