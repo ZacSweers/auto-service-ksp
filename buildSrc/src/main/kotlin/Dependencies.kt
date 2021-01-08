@@ -19,19 +19,19 @@ object Dependencies {
   const val guava = "com.google.guava:guava:30.0-jre"
 
   object AutoService {
-    const val version = "1.0-rc7"
+    private const val version = "1.0-rc7"
     const val annotations = "com.google.auto.service:auto-service-annotations:$version"
     const val processor = "com.google.auto.service:auto-service:$version"
   }
 
   object Kotlin {
-    const val version = "1.4.20"
+    const val version = "1.4.21"
     const val dokkaVersion = "1.4.20"
     const val jvmTarget = "1.8"
     val defaultFreeCompilerArgs = listOf("-Xjsr305=strict", "-progressive")
 
     object Ksp {
-      const val version = "1.4.20-dev-experimental-20201222"
+      private const val version = "1.4.20-dev-experimental-20210107"
       const val api = "com.google.devtools.ksp:symbol-processing-api:$version"
       const val ksp = "com.google.devtools.ksp:symbol-processing:$version"
     }

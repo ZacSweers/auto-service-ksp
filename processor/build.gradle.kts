@@ -15,7 +15,6 @@
  */
 
 plugins {
-  id("symbol-processing") version Dependencies.Kotlin.Ksp.version
   kotlin("jvm")
   kotlin("kapt")
   id("com.vanniktech.maven.publish")
