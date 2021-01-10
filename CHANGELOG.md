@@ -10,12 +10,12 @@ _2021-01-10_
 * The Gradle plugin is no more! Now that KSP natively handles including generated resources, it is no longer needed.
 Add `auto-service-ksp` and `auto-service-annotations` dependencies directly now:
   
-```kotlin
-dependencies {
-  ksp("dev.zacsweers.autoservice:auto-service-ksp:<auto-service-ksp version>")
-  implementation("com.google.auto.service:auto-service-annotations:<auto-service version>")
-}
-```
+  ```kotlin
+  dependencies {
+    ksp("dev.zacsweers.autoservice:auto-service-ksp:<auto-service-ksp version>")
+    implementation("com.google.auto.service:auto-service-annotations:<auto-service version>")
+  }
+  ```
 
 Version 0.2.1
 -------------
