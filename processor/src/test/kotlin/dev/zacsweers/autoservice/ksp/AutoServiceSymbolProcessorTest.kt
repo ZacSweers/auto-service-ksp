@@ -49,7 +49,7 @@ class AutoServiceSymbolProcessorTest(private val incremental: Boolean) {
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     val generatedSourcesDir = compilation.kspSourcesDir
     val generatedFile = File(generatedSourcesDir,
-      "resource/META-INF/services/java.util.concurrent.Callable")
+      "resources/META-INF/services/java.util.concurrent.Callable")
     assertThat(generatedFile.exists()).isTrue()
     assertThat(generatedFile.readText()).isEqualTo("test.CustomCallable\n")
   }
