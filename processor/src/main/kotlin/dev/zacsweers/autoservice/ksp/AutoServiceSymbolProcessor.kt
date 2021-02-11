@@ -12,6 +12,7 @@ import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
+import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSType
@@ -64,7 +65,7 @@ public class AutoServiceSymbolProcessor : SymbolProcessor {
    *   - For each [AutoService] annotated class for this interface
    *     - Create an entry in the file
    */
-  override fun process(resolver: Resolver) {
+  override fun process(resolver: Resolver): List<KSAnnotated> {
     val autoServiceType = resolver.getClassDeclarationByName(
       resolver.getKSNameFromString(AUTO_SERVICE_NAME))
       ?.asType(emptyList())
@@ -100,7 +101,8 @@ public class AutoServiceSymbolProcessor : SymbolProcessor {
           }
         }
       }
-    generateConfigFiles()
+    generateAndClearConfigFiles()
+    return emptyList()
   }
 
   private fun checkImplementer(
@@ -113,7 +115,7 @@ public class AutoServiceSymbolProcessor : SymbolProcessor {
     return providerImplementer.getAllSuperTypes().any { it.isAssignableFrom(providerType) }
   }
 
-  private fun generateConfigFiles() {
+  private fun generateAndClearConfigFiles() {
     for (providerInterface in providers.keySet()) {
       val resourceFile = "META-INF/services/$providerInterface"
       log("Working on resource file: $resourceFile")
@@ -142,6 +144,7 @@ public class AutoServiceSymbolProcessor : SymbolProcessor {
         error("Unable to create $resourceFile, $e")
       }
     }
+    providers.clear()
   }
 
   private fun log(message: String) {
