@@ -101,7 +101,7 @@ public class AutoServiceSymbolProcessor : SymbolProcessor {
           }
         }
       }
-    generateConfigFiles()
+    generateAndClearConfigFiles()
     return emptyList()
   }
 
@@ -115,7 +115,7 @@ public class AutoServiceSymbolProcessor : SymbolProcessor {
     return providerImplementer.getAllSuperTypes().any { it.isAssignableFrom(providerType) }
   }
 
-  private fun generateConfigFiles() {
+  private fun generateAndClearConfigFiles() {
     for (providerInterface in providers.keySet()) {
       val resourceFile = "META-INF/services/$providerInterface"
       log("Working on resource file: $resourceFile")
@@ -144,6 +144,7 @@ public class AutoServiceSymbolProcessor : SymbolProcessor {
         error("Unable to create $resourceFile, $e")
       }
     }
+    providers.clear()
   }
 
   private fun log(message: String) {
