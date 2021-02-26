@@ -69,23 +69,32 @@ public class AutoServiceSymbolProcessor : SymbolProcessor {
     val autoServiceType = resolver.getClassDeclarationByName(
       resolver.getKSNameFromString(AUTO_SERVICE_NAME))
       ?.asType(emptyList())
-      ?: error("@AutoService type not found on the classpath.")
+      ?: run {
+        logger.error("@AutoService type not found on the classpath.")
+        return emptyList()
+      }
 
     resolver.getSymbolsWithAnnotation(AUTO_SERVICE_NAME)
       .asSequence()
       .filterIsInstance<KSClassDeclaration>()
       .forEach { providerImplementer ->
         val annotation = providerImplementer.annotations.find { it.annotationType.resolve() == autoServiceType }
-          ?: error("@AutoService annotation not found")
+          ?: run {
+            logger.error("@AutoService annotation not found", providerImplementer)
+            return@forEach
+          }
 
         @Suppress("UNCHECKED_CAST")
         val providerInterfaces = annotation.arguments
           .find { it.name?.getShortName() == "value" }!!
           .value as? List<KSType>
-          ?: error("No 'value' member value found!")
+          ?: run {
+            logger.error("No 'value' member value found!", annotation)
+            return@forEach
+          }
 
         if (providerInterfaces.isEmpty()) {
-          error("No service interfaces provided for element! $providerImplementer")
+          logger.error("No service interfaces provided for element!", providerImplementer)
         }
 
         for (providerType in providerInterfaces) {
@@ -97,7 +106,8 @@ public class AutoServiceSymbolProcessor : SymbolProcessor {
               providerImplementer.qualifiedName +
               " does not implement " +
               providerDecl.qualifiedName
-            error(message)
+            logger.error(message, providerImplementer)
+            return@forEach
           }
         }
       }
@@ -141,7 +151,7 @@ public class AutoServiceSymbolProcessor : SymbolProcessor {
         }
         log("Wrote to: $resourceFile")
       } catch (e: IOException) {
-        error("Unable to create $resourceFile, $e")
+        logger.error("Unable to create $resourceFile, $e")
       }
     }
     providers.clear()
@@ -171,9 +181,5 @@ public class AutoServiceSymbolProcessor : SymbolProcessor {
     val simpleNames = typesString
       .split(".")
     return ClassName(pkgName, simpleNames)
-  }
-
-  override fun finish() {
-
   }
 }
