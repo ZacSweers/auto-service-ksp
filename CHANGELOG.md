@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Version 0.3.3
+-------------
+
+_2021-02-26_
+
+* Updated to KSP `1.4.30-1.0.0-alpha03`
+* Errors are now reported via KSP's error logger.
+
 Version 0.3.2
 -------------
 
