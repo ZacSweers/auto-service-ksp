@@ -1,6 +1,15 @@
 Changelog
 =========
 
+Version 0.4.0
+-------------
+
+_2021-04-09_
+
+* Update to KSP `1.4.32-1.0.0-alpha07`
+* Update Kotlin to 1.4.31
+* Update AutoService to 1.0 stable
+
 Version 0.3.3
 -------------
 
