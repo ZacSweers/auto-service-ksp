@@ -32,7 +32,7 @@ object Dependencies {
     const val compilerEmbeddable = "org.jetbrains.kotlin:kotlin-compiler-embeddable:$version"
 
     object Ksp {
-      private const val version = "1.4.32-1.0.0-alpha07"
+      private const val version = "1.4.32-1.0.0-alpha08"
       const val api = "com.google.devtools.ksp:symbol-processing-api:$version"
       const val ksp = "com.google.devtools.ksp:symbol-processing:$version"
     }

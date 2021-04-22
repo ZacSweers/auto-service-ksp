@@ -12,6 +12,7 @@ import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
+import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFile
@@ -21,7 +22,22 @@ import java.io.IOException
 import java.util.SortedSet
 
 @AutoService(SymbolProcessor::class)
-public class AutoServiceSymbolProcessor : SymbolProcessor {
+public class AutoServiceSymbolProcessorProvider : SymbolProcessorProvider {
+  override fun create(
+    options: Map<String, String>,
+    kotlinVersion: KotlinVersion,
+    codeGenerator: CodeGenerator,
+    logger: KSPLogger
+  ): SymbolProcessor {
+    return AutoServiceSymbolProcessor(codeGenerator, logger, options)
+  }
+}
+
+private class AutoServiceSymbolProcessor(
+  private val codeGenerator: CodeGenerator,
+  private val logger: KSPLogger,
+  options: Map<String, String>
+) : SymbolProcessor {
 
   private companion object {
     val AUTO_SERVICE_NAME = AutoService::class.qualifiedName!!
@@ -39,22 +55,8 @@ public class AutoServiceSymbolProcessor : SymbolProcessor {
    */
   private val providers: Multimap<String, Pair<String, KSFile>> = HashMultimap.create()
 
-  private lateinit var codeGenerator: CodeGenerator
-  private lateinit var logger: KSPLogger
-  private var verify = false
-  private var verbose = false
-
-  override fun init(
-    options: Map<String, String>,
-    kotlinVersion: KotlinVersion,
-    codeGenerator: CodeGenerator,
-    logger: KSPLogger
-  ) {
-    this.codeGenerator = codeGenerator
-    this.logger = logger
-    verify = options["autoserviceKsp.verify"]?.toBoolean() == true
-    verbose = options["autoserviceKsp.verbose"]?.toBoolean() == true
-  }
+  private val verify = options["autoserviceKsp.verify"]?.toBoolean() == true
+  private val verbose = options["autoserviceKsp.verbose"]?.toBoolean() == true
 
   /**
    * - For each class annotated with [AutoService
