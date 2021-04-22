@@ -1,6 +1,15 @@
 Changelog
 =========
 
+Version 0.4.1
+-------------
+
+_2021-04-22_
+
+* Update to KSP `1.4.32-alpha08`
+* (Internal) Switch to `SymbolProcessorProvider` API, which means KSP `1.4.32-alpha08` is the 
+  minimum required version!
+
 Version 0.4.0
 -------------
 
