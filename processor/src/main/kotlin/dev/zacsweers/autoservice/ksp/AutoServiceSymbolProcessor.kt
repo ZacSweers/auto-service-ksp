@@ -21,7 +21,7 @@ import com.squareup.kotlinpoet.ClassName
 import java.io.IOException
 import java.util.SortedSet
 
-@AutoService(SymbolProcessor::class)
+@AutoService(SymbolProcessorProvider::class)
 public class AutoServiceSymbolProcessorProvider : SymbolProcessorProvider {
   override fun create(
     options: Map<String, String>,
