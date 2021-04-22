@@ -6,7 +6,7 @@ import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.kspIncremental
 import com.tschuchort.compiletesting.kspSourcesDir
-import com.tschuchort.compiletesting.symbolProcessors
+import com.tschuchort.compiletesting.symbolProcessorProviders
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
@@ -42,7 +42,7 @@ class AutoServiceSymbolProcessorTest(private val incremental: Boolean) {
     val compilation = KotlinCompilation().apply {
       sources = listOf(source)
       inheritClassPath = true
-      symbolProcessors = listOf(AutoServiceSymbolProcessor())
+      symbolProcessorProviders = listOf(AutoServiceSymbolProcessorProvider())
       kspIncremental = incremental
     }
     val result = compilation.compile()

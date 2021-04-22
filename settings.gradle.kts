@@ -17,8 +17,8 @@
 pluginManagement {
   repositories {
     mavenCentral()
-    gradlePluginPortal()
     google()
+    gradlePluginPortal()
   }
 }
 
