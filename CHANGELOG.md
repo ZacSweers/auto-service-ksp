@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Version 0.5.0
+-------------
+
+_2021-04-29_
+
+* Update to KSP `1.5.0-alpha09`
+* Update Kotlin to `1.5.0`
+
 Version 0.4.2
 -------------
 
