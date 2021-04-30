@@ -24,9 +24,10 @@ buildscript {
 }
 
 plugins {
+  id("com.google.devtools.ksp") version Dependencies.Kotlin.Ksp.version apply false
   kotlin("jvm") version Dependencies.Kotlin.version apply false
   id("org.jetbrains.dokka") version Dependencies.Kotlin.dokkaVersion  apply false
-  id("com.vanniktech.maven.publish") version "0.13.0"  apply false
+  id("com.vanniktech.maven.publish") version "0.13.0" apply false
 }
 
 subprojects {

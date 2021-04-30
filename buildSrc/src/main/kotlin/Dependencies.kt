@@ -22,6 +22,7 @@ object Dependencies {
     private const val version = "1.0"
     const val annotations = "com.google.auto.service:auto-service-annotations:$version"
     const val processor = "com.google.auto.service:auto-service:$version"
+    const val ksp = "dev.zacsweers.autoservice:auto-service-ksp:0.4.2"
   }
 
   object Kotlin {
@@ -32,7 +33,7 @@ object Dependencies {
     const val compilerEmbeddable = "org.jetbrains.kotlin:kotlin-compiler-embeddable:$version"
 
     object Ksp {
-      private const val version = "1.5.0-1.0.0-alpha09"
+      const val version = "1.5.0-1.0.0-alpha09"
       const val api = "com.google.devtools.ksp:symbol-processing-api:$version"
       const val ksp = "com.google.devtools.ksp:symbol-processing:$version"
     }
