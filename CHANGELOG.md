@@ -1,12 +1,19 @@
 Changelog
 =========
 
+Version 0.5.1
+-------------
+
+_2021-05-13_
+
+* Update to KSP `1.5.0-1.0.0-alpha09`
+
 Version 0.5.0
 -------------
 
 _2021-04-29_
 
-* Update to KSP `1.5.0-alpha09`
+* Update to KSP `1.5.0-1.0.0-alpha09`
 * Update Kotlin to `1.5.0`
 
 Version 0.4.2
@@ -14,8 +21,8 @@ Version 0.4.2
 
 _2021-04-22_
 
-* Update to KSP `1.4.32-alpha08`
-* (Internal) Switch to `SymbolProcessorProvider` API, which means KSP `1.4.32-alpha08` is the 
+* Update to KSP `1.4.32-1.0.0-alpha08`
+* (Internal) Switch to `SymbolProcessorProvider` API, which means KSP `1.4.32-1.0.0-alpha08` is the 
   minimum required version!
 
 Version 0.4.1
