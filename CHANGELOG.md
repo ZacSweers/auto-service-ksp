@@ -6,7 +6,7 @@ Version 0.5.1
 
 _2021-05-13_
 
-* Update to KSP `1.5.0-1.0.0-alpha09`
+* Update to KSP `1.5.0-1.0.0-alpha10`
 
 Version 0.5.0
 -------------
