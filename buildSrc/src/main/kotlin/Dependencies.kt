@@ -21,6 +21,7 @@ object Dependencies {
   object AutoService {
     private const val version = "1.0"
     const val annotations = "com.google.auto.service:auto-service-annotations:$version"
+    const val compiler = "com.google.auto.service:auto-service:$version"
     const val ksp = "dev.zacsweers.autoservice:auto-service-ksp:0.4.2"
   }
 
@@ -44,8 +45,8 @@ object Dependencies {
   }
 
   object Testing {
-    const val compileTesting = "com.github.tschuchortdev:kotlin-compile-testing:1.3.6"
-    const val kspCompileTesting = "com.github.tschuchortdev:kotlin-compile-testing-ksp:1.3.6"
+    const val compileTesting = "com.github.tschuchortdev:kotlin-compile-testing:1.4.0"
+    const val kspCompileTesting = "com.github.tschuchortdev:kotlin-compile-testing-ksp:1.4.0"
     const val junit = "junit:junit:4.13.2"
     const val truth = "com.google.truth:truth:1.1.2"
   }
