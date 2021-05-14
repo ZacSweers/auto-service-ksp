@@ -15,15 +15,18 @@
  */
 
 plugins {
-  id("com.google.devtools.ksp")
+//  id("com.google.devtools.ksp")
   kotlin("jvm")
+  kotlin("kapt")
   id("com.vanniktech.maven.publish")
 }
 
 dependencies {
-  ksp(Dependencies.AutoService.ksp)
+  // Can't entirely rely on this until KSP is stable
+//  ksp(Dependencies.AutoService.ksp)
   compileOnly(Dependencies.Kotlin.Ksp.api)
 
+  kapt(Dependencies.AutoService.compiler)
   implementation(Dependencies.AutoService.annotations)
   implementation(Dependencies.KotlinPoet.kotlinPoet)
   implementation(Dependencies.guava)
