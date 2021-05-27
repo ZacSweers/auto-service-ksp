@@ -7,11 +7,10 @@ import com.google.common.collect.Sets
 import com.google.devtools.ksp.closestClassDeclaration
 import com.google.devtools.ksp.getAllSuperTypes
 import com.google.devtools.ksp.isLocal
-import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
-import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
@@ -23,25 +22,20 @@ import java.util.SortedSet
 
 @AutoService(SymbolProcessorProvider::class)
 public class AutoServiceSymbolProcessorProvider : SymbolProcessorProvider {
-  override fun create(
-    options: Map<String, String>,
-    kotlinVersion: KotlinVersion,
-    codeGenerator: CodeGenerator,
-    logger: KSPLogger
-  ): SymbolProcessor {
-    return AutoServiceSymbolProcessor(codeGenerator, logger, options)
-  }
+  override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
+    AutoServiceSymbolProcessor(environment)
 }
 
 private class AutoServiceSymbolProcessor(
-  private val codeGenerator: CodeGenerator,
-  private val logger: KSPLogger,
-  options: Map<String, String>
+  environment: SymbolProcessorEnvironment
 ) : SymbolProcessor {
 
   private companion object {
     val AUTO_SERVICE_NAME = AutoService::class.qualifiedName!!
   }
+
+  private val codeGenerator = environment.codeGenerator
+  private val logger = environment.logger
 
   /**
    * Maps the class names of service provider interfaces to the
@@ -55,8 +49,8 @@ private class AutoServiceSymbolProcessor(
    */
   private val providers: Multimap<String, Pair<String, KSFile>> = HashMultimap.create()
 
-  private val verify = options["autoserviceKsp.verify"]?.toBoolean() == true
-  private val verbose = options["autoserviceKsp.verbose"]?.toBoolean() == true
+  private val verify = environment.options["autoserviceKsp.verify"]?.toBoolean() == true
+  private val verbose = environment.options["autoserviceKsp.verbose"]?.toBoolean() == true
 
   /**
    * - For each class annotated with [AutoService
