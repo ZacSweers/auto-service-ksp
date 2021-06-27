@@ -80,14 +80,17 @@ private class AutoServiceSymbolProcessor(
             return@forEach
           }
 
+        val argumentValue = annotation.arguments
+          .find { it.name?.getShortName() == "value" }!!.value
+
         @Suppress("UNCHECKED_CAST")
-        val providerInterfaces = annotation.arguments
-          .find { it.name?.getShortName() == "value" }!!
-          .value as? List<KSType>
-          ?: run {
-            logger.error("No 'value' member value found!", annotation)
-            return@forEach
-          }
+        val providerInterfaces = try {
+          argumentValue as? List<KSType>
+            ?: listOf(argumentValue as KSType)
+        } catch (exception: ClassCastException) {
+          logger.error("No 'value' member value found!", annotation)
+          return@forEach
+        }
 
         if (providerInterfaces.isEmpty()) {
           logger.error("No service interfaces provided for element!", providerImplementer)
