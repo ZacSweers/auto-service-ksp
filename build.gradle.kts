@@ -27,27 +27,13 @@ plugins {
   id("com.google.devtools.ksp") version Dependencies.Kotlin.Ksp.version apply false
   kotlin("jvm") version Dependencies.Kotlin.version apply false
   id("org.jetbrains.dokka") version Dependencies.Kotlin.dokkaVersion  apply false
-  id("com.vanniktech.maven.publish") version "0.15.1" apply false
+  id("com.vanniktech.maven.publish") version "0.17.0" apply false
 }
 
 subprojects {
   repositories {
     mavenCentral()
     google()
-    // Required for Dokka
-    exclusiveContent {
-      forRepository {
-        maven {
-          name = "JCenter"
-          setUrl("https://jcenter.bintray.com/")
-        }
-      }
-      filter {
-        includeModule("org.jetbrains.kotlinx", "kotlinx-html-jvm")
-        includeGroup("org.jetbrains.dokka")
-        includeModule("org.jetbrains", "markdown")
-      }
-    }
   }
 
   pluginManager.withPlugin("java") {
