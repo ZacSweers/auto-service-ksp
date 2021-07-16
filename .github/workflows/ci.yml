@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java_version: [8, 11, 12, 13, 14, 15]
+        java_version: [16, 17-ea]
       fail-fast: false
     steps:
     - name: Checkout

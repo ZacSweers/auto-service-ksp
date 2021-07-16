@@ -27,6 +27,7 @@ class AutoServiceSymbolProcessorTest(private val incremental: Boolean) {
     }
   }
 
+  @Ignore("KSP doesn't work in kotlin-compile-testing for some reason")
   @Test
   fun smokeTest() {
     val source = SourceFile.kotlin("CustomCallable.kt", """
