@@ -52,8 +52,13 @@ subprojects {
 
   pluginManager.withPlugin("java") {
     configure<JavaPluginExtension> {
-      sourceCompatibility = JavaVersion.VERSION_1_8
-      targetCompatibility = JavaVersion.VERSION_1_8
+      toolchain {
+        languageVersion.set(JavaLanguageVersion.of(16))
+      }
+    }
+
+    project.tasks.withType<JavaCompile>().configureEach {
+      options.release.set(8)
     }
   }
 
