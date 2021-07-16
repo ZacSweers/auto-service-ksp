@@ -9,6 +9,7 @@ _2021-07-15_
 * Update to KSP `1.5.21-1.0.0-beta05`
 * Update to Kotlin `1.5.21`
 * Update to Dokka `1.5.0`
+* Update to KotlinPoet `1.9.0`
 * Test against JDK 17 early access previews
 
 Version 0.5.2
