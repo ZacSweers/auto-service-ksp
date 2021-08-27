@@ -26,7 +26,7 @@ jobs:
     - name: Install JDK
       uses: actions/setup-java@v2
       with:
-        distribution: 'adopt'
+        distribution: 'zulu'
         java-version: ${{ matrix.java_version }}
     - name: Configure Gradle
       # Initial gradle configuration, install dependencies, etc
@@ -34,5 +34,5 @@ jobs:
     - name: Build project
       run: ./gradlew build check --stacktrace
     - name: Upload snapshot (main only)
-      run: ./gradlew publishAllPublicationsToMavenCentralRepository -PmavenCentralUsername=${{ secrets.SONATYPE_USERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPE_PASSWORD }}
+      run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPE_USERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPE_PASSWORD }}
       if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && matrix.java_version == '16'

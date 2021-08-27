@@ -17,7 +17,7 @@
 plugins {
 //  id("com.google.devtools.ksp")
   kotlin("jvm")
-  kotlin("kapt")
+//  kotlin("kapt")
   id("com.vanniktech.maven.publish")
 }
 
@@ -26,7 +26,7 @@ dependencies {
 //  ksp(Dependencies.AutoService.ksp)
   compileOnly(Dependencies.Kotlin.Ksp.api)
 
-  kapt(Dependencies.AutoService.compiler)
+//  kapt(Dependencies.AutoService.compiler)
   implementation(Dependencies.AutoService.annotations)
   implementation(Dependencies.KotlinPoet.kotlinPoet)
   implementation(Dependencies.guava)

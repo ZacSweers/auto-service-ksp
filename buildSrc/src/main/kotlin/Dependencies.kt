@@ -26,14 +26,14 @@ object Dependencies {
   }
 
   object Kotlin {
-    const val version = "1.5.21"
+    const val version = "1.5.30"
     const val dokkaVersion = "1.5.0"
     const val jvmTarget = "1.8"
     val defaultFreeCompilerArgs = listOf("-Xjsr305=strict", "-progressive")
     const val compilerEmbeddable = "org.jetbrains.kotlin:kotlin-compiler-embeddable:$version"
 
     object Ksp {
-      const val version = "1.5.21-1.0.0-beta05"
+      const val version = "1.5.30-1.0.0-beta08"
       const val api = "com.google.devtools.ksp:symbol-processing-api:$version"
       const val ksp = "com.google.devtools.ksp:symbol-processing:$version"
     }
@@ -45,8 +45,8 @@ object Dependencies {
   }
 
   object Testing {
-    const val compileTesting = "com.github.tschuchortdev:kotlin-compile-testing:1.4.2"
-    const val kspCompileTesting = "com.github.tschuchortdev:kotlin-compile-testing-ksp:1.4.2"
+    const val compileTesting = "com.github.tschuchortdev:kotlin-compile-testing:1.4.3"
+    const val kspCompileTesting = "com.github.tschuchortdev:kotlin-compile-testing-ksp:1.4.3"
     const val junit = "junit:junit:4.13.2"
     const val truth = "com.google.truth:truth:1.1.2"
   }
