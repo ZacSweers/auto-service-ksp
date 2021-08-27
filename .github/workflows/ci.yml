@@ -34,5 +34,5 @@ jobs:
     - name: Build project
       run: ./gradlew build check --stacktrace
     - name: Upload snapshot (main only)
-      run: ./gradlew publish -PSONATYPE_NEXUS_USERNAME=${{ secrets.SONATYPE_USERNAME }} -PSONATYPE_NEXUS_PASSWORD=${{ secrets.SONATYPE_PASSWORD }}
+      run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPE_USERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPE_PASSWORD }}
       if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && matrix.java_version == '16'
