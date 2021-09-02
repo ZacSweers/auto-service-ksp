@@ -53,4 +53,32 @@ class AutoServiceSymbolProcessorTest(private val incremental: Boolean) {
     assertThat(generatedFile.exists()).isTrue()
     assertThat(generatedFile.readText()).isEqualTo("test.CustomCallable\n")
   }
+
+  @Test
+  fun smokeTestForJava() {
+    val source = SourceFile.java("CustomCallable.java", """
+      package test;
+      import com.google.auto.service.AutoService;
+      import java.util.concurrent.Callable;
+
+      @AutoService(Callable.class)
+      public class CustomCallable implements Callable<String> {
+        @Override public String call() { return "Hello world!"; }
+      }
+    """)
+
+    val compilation = KotlinCompilation().apply {
+      sources = listOf(source)
+      inheritClassPath = true
+      symbolProcessorProviders = listOf(AutoServiceSymbolProcessorProvider())
+      kspIncremental = incremental
+    }
+    val result = compilation.compile()
+    assertThat(result.exitCode).isEqualTo(ExitCode.OK)
+    val generatedSourcesDir = compilation.kspSourcesDir
+    val generatedFile = File(generatedSourcesDir,
+      "resources/META-INF/services/java.util.concurrent.Callable")
+    assertThat(generatedFile.exists()).isTrue()
+    assertThat(generatedFile.readText()).isEqualTo("test.CustomCallable\n")
+  }
 }
