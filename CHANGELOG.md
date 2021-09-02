@@ -1,6 +1,16 @@
 Changelog
 =========
 
+Version 0.5.5
+-------------
+
+_2021-09-02_
+
+* Update KSP to `1.5.30-1.0.0-beta09`.
+* **Fix:** Java sources are now supported.
+
+Thanks to [@ganadist](https://github.com/ganadist) for contributing to this release!
+
 Version 0.5.4
 -------------
 
