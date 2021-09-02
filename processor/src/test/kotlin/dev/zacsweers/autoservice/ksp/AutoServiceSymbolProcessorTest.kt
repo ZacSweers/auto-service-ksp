@@ -54,7 +54,6 @@ class AutoServiceSymbolProcessorTest(private val incremental: Boolean) {
     assertThat(generatedFile.readText()).isEqualTo("test.CustomCallable\n")
   }
 
-  @Ignore("https://github.com/tschuchortdev/kotlin-compile-testing/issues/105")
   @Test
   fun smokeTestForJava() {
     val source = SourceFile.java("CustomCallable.java", """
