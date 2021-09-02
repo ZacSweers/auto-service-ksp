@@ -7,7 +7,6 @@ import com.tschuchort.compiletesting.SourceFile
 import com.tschuchort.compiletesting.kspIncremental
 import com.tschuchort.compiletesting.kspSourcesDir
 import com.tschuchort.compiletesting.symbolProcessorProviders
-import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
@@ -27,7 +26,6 @@ class AutoServiceSymbolProcessorTest(private val incremental: Boolean) {
     }
   }
 
-  @Ignore("KSP doesn't work in kotlin-compile-testing for some reason")
   @Test
   fun smokeTest() {
     val source = SourceFile.kotlin("CustomCallable.kt", """
