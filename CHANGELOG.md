@@ -1,6 +1,14 @@
 Changelog
 =========
 
+Version 1.0.0
+-------------
+
+_2021-09-07_
+
+* Stable release!
+* Update to KSP `1.5.30-1.0.0`.
+
 Version 0.5.5
 -------------
 
