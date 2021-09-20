@@ -22,12 +22,12 @@ object Dependencies {
     private const val version = "1.0"
     const val annotations = "com.google.auto.service:auto-service-annotations:$version"
     const val compiler = "com.google.auto.service:auto-service:$version"
-    const val ksp = "dev.zacsweers.autoservice:auto-service-ksp:0.4.2"
+    const val ksp = "dev.zacsweers.autoservice:auto-service-ksp:1.0.0"
   }
 
   object Kotlin {
-    const val version = "1.5.30"
-    const val dokkaVersion = "1.5.0"
+    const val version = "1.5.31"
+    const val dokkaVersion = "1.5.30"
     const val jvmTarget = "1.8"
     val defaultFreeCompilerArgs = listOf("-Xjsr305=strict", "-progressive")
     const val compilerEmbeddable = "org.jetbrains.kotlin:kotlin-compiler-embeddable:$version"
@@ -40,7 +40,7 @@ object Dependencies {
   }
 
   object KotlinPoet {
-    private const val version = "1.9.0"
+    private const val version = "1.10.0"
     const val kotlinPoet = "com.squareup:kotlinpoet:$version"
   }
 
