@@ -19,7 +19,7 @@ object Dependencies {
   const val guava = "com.google.guava:guava:30.1.1-jre"
 
   object AutoService {
-    private const val version = "1.0"
+    private const val version = "1.1.1"
     const val annotations = "com.google.auto.service:auto-service-annotations:$version"
     const val compiler = "com.google.auto.service:auto-service:$version"
     const val ksp = "dev.zacsweers.autoservice:auto-service-ksp:1.0.0"
