@@ -13,21 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.jetbrains.dokka.gradle.DokkaTask
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
-buildscript {
-  dependencies {
-    classpath(kotlin("gradle-plugin", version = Dependencies.Kotlin.version))
-  }
-}
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-  id("com.google.devtools.ksp") version Dependencies.Kotlin.Ksp.version apply false
-  kotlin("jvm") version Dependencies.Kotlin.version apply false
-  id("org.jetbrains.dokka") version Dependencies.Kotlin.dokkaVersion  apply false
-  id("com.vanniktech.maven.publish") version "0.17.0" apply false
+  alias(libs.plugins.kotlin.jvm)
+  alias(libs.plugins.ksp)
+  alias(libs.plugins.spotless)
+  alias(libs.plugins.binaryCompatibilityValidator)
+  alias(libs.plugins.dokka) apply false
+  alias(libs.plugins.mavenPublish) apply false
+}
+
+spotless {
+  format("misc") {
+    target("*.gradle", "*.md", ".gitignore")
+    trimTrailingWhitespace()
+    indentWithSpaces(2)
+    endWithNewline()
+  }
+  kotlin {
+    target("**/*.kt")
+    ktfmt(libs.versions.ktfmt.get())
+    trimTrailingWhitespace()
+    endWithNewline()
+    licenseHeaderFile("spotless/spotless.kt")
+    targetExclude("**/spotless.kt", "**/build/**")
+  }
+  kotlinGradle {
+    target("**/*.kts")
+    ktfmt(libs.versions.ktfmt.get())
+    trimTrailingWhitespace()
+    endWithNewline()
+  }
 }
 
 subprojects {
@@ -39,12 +60,12 @@ subprojects {
   pluginManager.withPlugin("java") {
     configure<JavaPluginExtension> {
       toolchain {
-        languageVersion.set(JavaLanguageVersion.of(16))
+        languageVersion.set(libs.versions.jdk.map(JavaLanguageVersion::of))
       }
     }
 
     project.tasks.withType<JavaCompile>().configureEach {
-      options.release.set(8)
+      options.release.set(libs.versions.jvmTarget.map(String::toInt))
     }
   }
 
@@ -54,11 +75,24 @@ subprojects {
     }
 
     tasks.withType<KotlinCompile>().configureEach {
-      kotlinOptions {
-        jvmTarget = Dependencies.Kotlin.jvmTarget
-        @Suppress("SuspiciousCollectionReassignment")
-        freeCompilerArgs += Dependencies.Kotlin.defaultFreeCompilerArgs
+      compilerOptions {
+        // TODO kotlin 1.9.0
+//        progressiveMode.set(true)
+        if (project.name != "sample") {
+          jvmTarget.set(libs.versions.jvmTarget.map(JvmTarget::fromTarget))
+        }
+        freeCompilerArgs.addAll("-Xjsr305=strict", "-progressive")
       }
+    }
+
+  }
+
+  plugins.withId("com.vanniktech.maven.publish") {
+    configure<MavenPublishBaseExtension> { publishToMavenCentral(automaticRelease = true) }
+
+    // configuration required to produce unique META-INF/*.kotlin_module file names
+    tasks.withType<KotlinCompile>().configureEach {
+      compilerOptions { moduleName.set(project.property("POM_ARTIFACT_ID") as String) }
     }
 
     apply(plugin = "org.jetbrains.dokka")
