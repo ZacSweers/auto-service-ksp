@@ -20,9 +20,6 @@ plugins {
   alias(libs.plugins.mavenPublish)
 }
 
-// TODO wtf?
-tasks.withType<ProcessResources>().configureEach { duplicatesStrategy = DuplicatesStrategy.INCLUDE }
-
 dependencies {
   ksp(libs.autoService.ksp)
   compileOnly(libs.ksp.api)
