@@ -35,17 +35,10 @@ import com.squareup.kotlinpoet.ClassName
 import java.io.IOException
 import java.util.SortedSet
 
-@AutoService(SymbolProcessorProvider::class)
-public class AutoServiceSymbolProcessorProvider : SymbolProcessorProvider {
-  override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
-      AutoServiceSymbolProcessor(environment)
-}
-
-private class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment) :
-    SymbolProcessor {
+public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
 
   private companion object {
-    val AUTO_SERVICE_NAME = AutoService::class.qualifiedName!!
+    const val AUTO_SERVICE_NAME = "com.google.auto.service.AutoService"
   }
 
   private val codeGenerator = environment.codeGenerator
@@ -80,13 +73,17 @@ private class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment
             .getClassDeclarationByName(resolver.getKSNameFromString(AUTO_SERVICE_NAME))
             ?.asType(emptyList())
             ?: run {
-              logger.error("@AutoService type not found on the classpath.")
+              val message = "@AutoService type not found on the classpath, skipping processing."
+              if (verbose) {
+                logger.warn(message)
+              } else {
+                logger.info(message)
+              }
               return emptyList()
             }
 
     resolver
         .getSymbolsWithAnnotation(AUTO_SERVICE_NAME)
-        .asSequence()
         .filterIsInstance<KSClassDeclaration>()
         .forEach { providerImplementer ->
           val annotation =
@@ -194,5 +191,11 @@ private class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment
 
     val simpleNames = typesString.split(".")
     return ClassName(pkgName, simpleNames)
+  }
+
+  @AutoService(SymbolProcessorProvider::class)
+  public class Provider : SymbolProcessorProvider {
+    override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
+        AutoServiceSymbolProcessor(environment)
   }
 }
