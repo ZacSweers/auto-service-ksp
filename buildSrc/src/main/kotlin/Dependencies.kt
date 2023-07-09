@@ -27,7 +27,7 @@ object Dependencies {
 
   object Kotlin {
     const val version = "1.5.31"
-    const val dokkaVersion = "1.5.30"
+    const val dokkaVersion = "1.8.20"
     const val jvmTarget = "1.8"
     val defaultFreeCompilerArgs = listOf("-Xjsr305=strict", "-progressive")
     const val compilerEmbeddable = "org.jetbrains.kotlin:kotlin-compiler-embeddable:$version"
