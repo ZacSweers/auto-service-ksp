@@ -40,7 +40,7 @@ object Dependencies {
   }
 
   object KotlinPoet {
-    private const val version = "1.10.0"
+    private const val version = "1.14.2"
     const val kotlinPoet = "com.squareup:kotlinpoet:$version"
   }
 
