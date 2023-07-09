@@ -69,12 +69,9 @@ subprojects {
 
     tasks.withType<KotlinCompile>().configureEach {
       compilerOptions {
-        // TODO kotlin 1.9.0
-        //        progressiveMode.set(true)
-        if (project.name != "sample") {
-          jvmTarget.set(libs.versions.jvmTarget.map(JvmTarget::fromTarget))
-        }
-        freeCompilerArgs.addAll("-Xjsr305=strict", "-progressive")
+        progressiveMode.set(true)
+        jvmTarget.set(libs.versions.jvmTarget.map(JvmTarget::fromTarget))
+        freeCompilerArgs.addAll("-Xjsr305=strict")
       }
     }
   }
