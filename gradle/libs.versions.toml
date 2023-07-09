@@ -1,0 +1,39 @@
+[versions]
+autoService = "1.0.1"
+kct = "0.2.1"
+kotlin = "1.8.22"
+jdk = "20"
+jvmTarget = "11"
+ksp = "1.8.22-1.0.11"
+ktfmt = "0.44"
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.13.2" }
+dokka = { id = "org.jetbrains.dokka", version = "1.8.20" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.25.3" }
+spotless = { id = "com.diffplug.spotless", version = "6.19.0" }
+
+[libraries]
+autoService-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoService" }
+autoService-compiler = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
+autoService-ksp = "dev.zacsweers.autoservice:auto-service-ksp:1.0.0"
+
+guava = "com.google.guava:guava:30.1.1-jre"
+
+kotlin-compilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
+
+kotlinpoet = "com.squareup:kotlinpoet:1.14.2"
+
+ksp = { module = "com.google.devtools.ksp:symbol-processing", version.ref = "ksp" }
+ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+
+# Only present to trigger automatic renovate updates
+ktfmt = { module = "com.facebook:ktfmt", version.ref = "ktfmt" }
+
+# Test libs
+junit = { module = "junit:junit", version = "4.13.2" }
+truth = { module = "com.google.truth:truth", version = "1.1.5" }
+kct-core = { module = "dev.zacsweers.kctfork:core", version.ref = "kct" }
+kct-ksp = { module = "dev.zacsweers.kctfork:ksp", version.ref ="kct" }

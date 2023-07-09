@@ -22,5 +22,13 @@ pluginManagement {
   }
 }
 
+dependencyResolutionManagement {
+  repositories {
+    mavenCentral()
+    google()
+  }
+}
+
 rootProject.name = "auto-service-ksp-root"
+
 include(":processor")

@@ -25,7 +25,7 @@ Then annotate your service implementation with `@AutoService` as your normally w
 
 ## Caveats
 
-While the AutoService _annotation processor_ will merge existing service files, but this is not 
+While the AutoService _annotation processor_ will merge existing service files, but this is not
 currently implemented in this KSP implementation yet.
 
 ## Advanced

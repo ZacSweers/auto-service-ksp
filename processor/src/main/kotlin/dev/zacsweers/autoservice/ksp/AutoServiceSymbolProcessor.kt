@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2023 Zac Sweers
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package dev.zacsweers.autoservice.ksp
 
 import com.google.auto.service.AutoService
@@ -23,12 +38,11 @@ import java.util.SortedSet
 @AutoService(SymbolProcessorProvider::class)
 public class AutoServiceSymbolProcessorProvider : SymbolProcessorProvider {
   override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
-    AutoServiceSymbolProcessor(environment)
+      AutoServiceSymbolProcessor(environment)
 }
 
-private class AutoServiceSymbolProcessor(
-  environment: SymbolProcessorEnvironment
-) : SymbolProcessor {
+private class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment) :
+    SymbolProcessor {
 
   private companion object {
     val AUTO_SERVICE_NAME = AutoService::class.qualifiedName!!
@@ -38,9 +52,8 @@ private class AutoServiceSymbolProcessor(
   private val logger = environment.logger
 
   /**
-   * Maps the class names of service provider interfaces to the
-   * class names of the concrete classes which implement them plus their KSFile (for incremental
-   * processing).
+   * Maps the class names of service provider interfaces to the class names of the concrete classes
+   * which implement them plus their KSFile (for incremental processing).
    *
    * For example,
    * ```
@@ -54,69 +67,77 @@ private class AutoServiceSymbolProcessor(
 
   /**
    * - For each class annotated with [AutoService
-   *   - Verify the [AutoService] interface value is correct
-   *   - Categorize the class by its service interface
+   *     - Verify the [AutoService] interface value is correct
+   *     - Categorize the class by its service interface
    * - For each [AutoService] interface
-   *   - Create a file named `META-INF/services/<interface>`
-   *   - For each [AutoService] annotated class for this interface
-   *     - Create an entry in the file
+   *     - Create a file named `META-INF/services/<interface>`
+   *     - For each [AutoService] annotated class for this interface
+   *         - Create an entry in the file
    */
   override fun process(resolver: Resolver): List<KSAnnotated> {
-    val autoServiceType = resolver.getClassDeclarationByName(
-      resolver.getKSNameFromString(AUTO_SERVICE_NAME))
-      ?.asType(emptyList())
-      ?: run {
-        logger.error("@AutoService type not found on the classpath.")
-        return emptyList()
-      }
+    val autoServiceType =
+        resolver
+            .getClassDeclarationByName(resolver.getKSNameFromString(AUTO_SERVICE_NAME))
+            ?.asType(emptyList())
+            ?: run {
+              logger.error("@AutoService type not found on the classpath.")
+              return emptyList()
+            }
 
-    resolver.getSymbolsWithAnnotation(AUTO_SERVICE_NAME)
-      .asSequence()
-      .filterIsInstance<KSClassDeclaration>()
-      .forEach { providerImplementer ->
-        val annotation = providerImplementer.annotations.find { it.annotationType.resolve() == autoServiceType }
-          ?: run {
-            logger.error("@AutoService annotation not found", providerImplementer)
-            return@forEach
+    resolver
+        .getSymbolsWithAnnotation(AUTO_SERVICE_NAME)
+        .asSequence()
+        .filterIsInstance<KSClassDeclaration>()
+        .forEach { providerImplementer ->
+          val annotation =
+              providerImplementer.annotations.find {
+                it.annotationType.resolve() == autoServiceType
+              }
+                  ?: run {
+                    logger.error("@AutoService annotation not found", providerImplementer)
+                    return@forEach
+                  }
+
+          val argumentValue =
+              annotation.arguments.find { it.name?.getShortName() == "value" }!!.value
+
+          @Suppress("UNCHECKED_CAST")
+          val providerInterfaces =
+              try {
+                argumentValue as? List<KSType> ?: listOf(argumentValue as KSType)
+              } catch (exception: ClassCastException) {
+                logger.error("No 'value' member value found!", annotation)
+                return@forEach
+              }
+
+          if (providerInterfaces.isEmpty()) {
+            logger.error("No service interfaces provided for element!", providerImplementer)
           }
 
-        val argumentValue = annotation.arguments
-          .find { it.name?.getShortName() == "value" }!!.value
-
-        @Suppress("UNCHECKED_CAST")
-        val providerInterfaces = try {
-          argumentValue as? List<KSType>
-            ?: listOf(argumentValue as KSType)
-        } catch (exception: ClassCastException) {
-          logger.error("No 'value' member value found!", annotation)
-          return@forEach
-        }
-
-        if (providerInterfaces.isEmpty()) {
-          logger.error("No service interfaces provided for element!", providerImplementer)
-        }
-
-        for (providerType in providerInterfaces) {
-          val providerDecl = providerType.declaration.closestClassDeclaration()!!
-          if (checkImplementer(providerImplementer, providerType)) {
-            providers.put(providerDecl.toBinaryName(), providerImplementer.toBinaryName() to providerImplementer.containingFile!!)
-          } else {
-            val message = "ServiceProviders must implement their service provider interface. " +
-              providerImplementer.qualifiedName +
-              " does not implement " +
-              providerDecl.qualifiedName
-            logger.error(message, providerImplementer)
-            return@forEach
+          for (providerType in providerInterfaces) {
+            val providerDecl = providerType.declaration.closestClassDeclaration()!!
+            if (checkImplementer(providerImplementer, providerType)) {
+              providers.put(
+                  providerDecl.toBinaryName(),
+                  providerImplementer.toBinaryName() to providerImplementer.containingFile!!)
+            } else {
+              val message =
+                  "ServiceProviders must implement their service provider interface. " +
+                      providerImplementer.qualifiedName +
+                      " does not implement " +
+                      providerDecl.qualifiedName
+              logger.error(message, providerImplementer)
+              return@forEach
+            }
           }
         }
-      }
     generateAndClearConfigFiles()
     return emptyList()
   }
 
   private fun checkImplementer(
-    providerImplementer: KSClassDeclaration,
-    providerType: KSType
+      providerImplementer: KSClassDeclaration,
+      providerType: KSType
   ): Boolean {
     if (!verify) {
       return true
@@ -137,12 +158,8 @@ private class AutoServiceSymbolProcessor(
         val ksFiles = foundImplementers.map { it.second }
         log("Originating files: ${ksFiles.map(KSFile::fileName)}")
         val dependencies = Dependencies(true, *ksFiles.toTypedArray())
-        codeGenerator.createNewFile(
-          dependencies,
-          "",
-          resourceFile,
-          ""
-        ).bufferedWriter().use { writer ->
+        codeGenerator.createNewFile(dependencies, "", resourceFile, "").bufferedWriter().use {
+            writer ->
           for (service in allServices) {
             writer.write(service)
             writer.newLine()
@@ -163,22 +180,19 @@ private class AutoServiceSymbolProcessor(
   }
 
   /**
-   * Returns the binary name of a reference type. For example,
-   * {@code com.google.Foo$Bar}, instead of {@code com.google.Foo.Bar}.
+   * Returns the binary name of a reference type. For example, {@code com.google.Foo$Bar}, instead
+   * of {@code com.google.Foo.Bar}.
    */
   private fun KSClassDeclaration.toBinaryName(): String {
     return toClassName().reflectionName()
   }
 
   private fun KSClassDeclaration.toClassName(): ClassName {
-    require(!isLocal()) {
-      "Local/anonymous classes are not supported!"
-    }
+    require(!isLocal()) { "Local/anonymous classes are not supported!" }
     val pkgName = packageName.asString()
     val typesString = qualifiedName!!.asString().removePrefix("$pkgName.")
 
-    val simpleNames = typesString
-      .split(".")
+    val simpleNames = typesString.split(".")
     return ClassName(pkgName, simpleNames)
   }
 }

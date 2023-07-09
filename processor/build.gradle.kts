@@ -15,27 +15,27 @@
  */
 
 plugins {
-//  id("com.google.devtools.ksp")
-  kotlin("jvm")
-//  kotlin("kapt")
-  id("com.vanniktech.maven.publish")
+  alias(libs.plugins.kotlin.jvm)
+  alias(libs.plugins.ksp)
+  alias(libs.plugins.mavenPublish)
 }
 
+// TODO wtf?
+tasks.withType<ProcessResources>().configureEach { duplicatesStrategy = DuplicatesStrategy.INCLUDE }
+
 dependencies {
-  // Can't entirely rely on this until KSP is stable
-//  ksp(Dependencies.AutoService.ksp)
-  compileOnly(Dependencies.Kotlin.Ksp.api)
+  ksp(libs.autoService.ksp)
+  compileOnly(libs.ksp.api)
 
-//  kapt(Dependencies.AutoService.compiler)
-  implementation(Dependencies.AutoService.annotations)
-  implementation(Dependencies.KotlinPoet.kotlinPoet)
-  implementation(Dependencies.guava)
+  implementation(libs.autoService.annotations)
+  implementation(libs.kotlinpoet)
+  implementation(libs.guava)
 
-  testImplementation(Dependencies.Kotlin.Ksp.api)
-  testImplementation(Dependencies.Testing.truth)
-  testImplementation(Dependencies.Testing.junit)
-  testImplementation(Dependencies.Testing.kspCompileTesting)
-  testImplementation(Dependencies.Kotlin.Ksp.ksp)
-  testImplementation(Dependencies.Testing.compileTesting)
-  testImplementation(Dependencies.Kotlin.compilerEmbeddable)
+  testImplementation(libs.ksp.api)
+  testImplementation(libs.truth)
+  testImplementation(libs.junit)
+  testImplementation(libs.kct.core)
+  testImplementation(libs.ksp)
+  testImplementation(libs.kct.ksp)
+  testImplementation(libs.kotlin.compilerEmbeddable)
 }
