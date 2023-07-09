@@ -12,7 +12,7 @@ jobs:
       fail-fast: false
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v3
     - name: Gradle Wrapper Validation
       uses: gradle/wrapper-validation-action@v1
     - name: Generate cache key
