@@ -45,7 +45,7 @@ private class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment
     SymbolProcessor {
 
   private companion object {
-    val AUTO_SERVICE_NAME = AutoService::class.qualifiedName!!
+    const val AUTO_SERVICE_NAME = "com.google.auto.service.AutoService"
   }
 
   private val codeGenerator = environment.codeGenerator
@@ -80,13 +80,17 @@ private class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment
             .getClassDeclarationByName(resolver.getKSNameFromString(AUTO_SERVICE_NAME))
             ?.asType(emptyList())
             ?: run {
-              logger.error("@AutoService type not found on the classpath.")
+              val message = "@AutoService type not found on the classpath, skipping processing."
+              if (verbose) {
+                logger.warn(message)
+              } else {
+                logger.info(message)
+              }
               return emptyList()
             }
 
     resolver
         .getSymbolsWithAnnotation(AUTO_SERVICE_NAME)
-        .asSequence()
         .filterIsInstance<KSClassDeclaration>()
         .forEach { providerImplementer ->
           val annotation =
