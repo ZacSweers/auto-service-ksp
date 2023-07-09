@@ -9,6 +9,7 @@ _2023-07-09_
 Happy couple of new years!
 
 - **Fix**: The processor no longer errors if `@AutoService` isn't found on the classpath. By default it will log to `info` level and to `warn` level if verbose mode is enabled.
+- Update auto-service annotations to `1.1.1`.
 - Update Kotlin to `1.8.22`.
 - Update KSP to `1.8.22-1.0.11`.
 - Update Guava to `32.1.1-jre`.
