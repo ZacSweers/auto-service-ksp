@@ -61,7 +61,7 @@ class AutoServiceSymbolProcessorTest(private val incremental: Boolean) {
         KotlinCompilation().apply {
           sources = listOf(source)
           inheritClassPath = true
-          symbolProcessorProviders = listOf(AutoServiceSymbolProcessorProvider())
+          symbolProcessorProviders = listOf(AutoServiceSymbolProcessor.Provider())
           kspIncremental = incremental
         }
     val result = compilation.compile()
@@ -93,7 +93,7 @@ class AutoServiceSymbolProcessorTest(private val incremental: Boolean) {
         KotlinCompilation().apply {
           sources = listOf(source)
           inheritClassPath = true
-          symbolProcessorProviders = listOf(AutoServiceSymbolProcessorProvider())
+          symbolProcessorProviders = listOf(AutoServiceSymbolProcessor.Provider())
           kspIncremental = incremental
         }
     val result = compilation.compile()

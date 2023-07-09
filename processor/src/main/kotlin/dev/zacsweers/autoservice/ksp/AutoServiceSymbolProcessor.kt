@@ -35,14 +35,7 @@ import com.squareup.kotlinpoet.ClassName
 import java.io.IOException
 import java.util.SortedSet
 
-@AutoService(SymbolProcessorProvider::class)
-public class AutoServiceSymbolProcessorProvider : SymbolProcessorProvider {
-  override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
-      AutoServiceSymbolProcessor(environment)
-}
-
-private class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment) :
-    SymbolProcessor {
+public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment) : SymbolProcessor {
 
   private companion object {
     const val AUTO_SERVICE_NAME = "com.google.auto.service.AutoService"
@@ -198,5 +191,11 @@ private class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment
 
     val simpleNames = typesString.split(".")
     return ClassName(pkgName, simpleNames)
+  }
+
+  @AutoService(SymbolProcessorProvider::class)
+  public class Provider : SymbolProcessorProvider {
+    override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
+        AutoServiceSymbolProcessor(environment)
   }
 }
