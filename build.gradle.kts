@@ -28,6 +28,9 @@ plugins {
   alias(libs.plugins.mavenPublish) apply false
 }
 
+
+apiValidation { ignoredProjects += listOf("processor") }
+
 spotless {
   format("misc") {
     target("*.gradle", "*.md", ".gitignore")
@@ -52,11 +55,6 @@ spotless {
 }
 
 subprojects {
-  repositories {
-    mavenCentral()
-    google()
-  }
-
   pluginManager.withPlugin("java") {
     configure<JavaPluginExtension> {
       toolchain {
