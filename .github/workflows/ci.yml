@@ -4,35 +4,45 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: JDK ${{ matrix.java_version }}
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java_version: [16, 17-ea]
-      fail-fast: false
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v3
+
     - name: Gradle Wrapper Validation
       uses: gradle/wrapper-validation-action@v1
-    - name: Generate cache key
-      run: ./checksum.sh checksum.txt
-    - uses: actions/cache@v3
-      with:
-        path: ~/.gradle/caches
-        key: ${{ runner.os }}-gradle-${{ matrix.java_version }}-${{ matrix.job }}-${{ hashFiles('checksum.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-gradle-${{ matrix.java_version }}-${{ matrix.job }}-
+
     - name: Install JDK
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v3
       with:
         distribution: 'zulu'
-        java-version: ${{ matrix.java_version }}
-    - name: Configure Gradle
-      # Initial gradle configuration, install dependencies, etc
-      run: ./gradlew help
-    - name: Build project
-      run: ./gradlew build check --stacktrace
-    - name: Upload snapshot (main only)
-      run: ./gradlew publish -PmavenCentralUsername=${{ secrets.SONATYPE_USERNAME }} -PmavenCentralPassword=${{ secrets.SONATYPE_PASSWORD }}
-      if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && matrix.java_version == '16'
+        java-version: '20'
+
+    - name: Check
+      id: gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: check
+        gradle-home-cache-cleanup: true
+        cache-read-only: false
+
+  publish:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && github.repository == 'zacsweers/auto-service-ksp'
+    needs: [ build ]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Configure JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '20'
+
+      - name: Upload snapshot (main only)
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SonatypeUsername }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SonatypePassword }}
+        run: ./publish.sh
