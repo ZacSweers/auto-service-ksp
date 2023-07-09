@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-  alias(libs.plugins.kotlin.jvm)
+  alias(libs.plugins.kotlin.jvm) apply false
   alias(libs.plugins.ksp)
   alias(libs.plugins.spotless)
   alias(libs.plugins.binaryCompatibilityValidator)
