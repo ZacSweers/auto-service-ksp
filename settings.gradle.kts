@@ -30,4 +30,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "auto-service-ksp-root"
+
 include(":processor")

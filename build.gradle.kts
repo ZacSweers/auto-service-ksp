@@ -15,9 +15,9 @@
  */
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.jetbrains.dokka.gradle.DokkaTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
   alias(libs.plugins.kotlin.jvm)
@@ -27,7 +27,6 @@ plugins {
   alias(libs.plugins.dokka) apply false
   alias(libs.plugins.mavenPublish) apply false
 }
-
 
 apiValidation { ignoredProjects += listOf("processor") }
 
@@ -57,9 +56,7 @@ spotless {
 subprojects {
   pluginManager.withPlugin("java") {
     configure<JavaPluginExtension> {
-      toolchain {
-        languageVersion.set(libs.versions.jdk.map(JavaLanguageVersion::of))
-      }
+      toolchain { languageVersion.set(libs.versions.jdk.map(JavaLanguageVersion::of)) }
     }
 
     project.tasks.withType<JavaCompile>().configureEach {
@@ -68,21 +65,18 @@ subprojects {
   }
 
   pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
-    configure<KotlinProjectExtension> {
-      explicitApi()
-    }
+    configure<KotlinProjectExtension> { explicitApi() }
 
     tasks.withType<KotlinCompile>().configureEach {
       compilerOptions {
         // TODO kotlin 1.9.0
-//        progressiveMode.set(true)
+        //        progressiveMode.set(true)
         if (project.name != "sample") {
           jvmTarget.set(libs.versions.jvmTarget.map(JvmTarget::fromTarget))
         }
         freeCompilerArgs.addAll("-Xjsr305=strict", "-progressive")
       }
     }
-
   }
 
   plugins.withId("com.vanniktech.maven.publish") {
@@ -100,7 +94,8 @@ subprojects {
         skipDeprecated.set(true)
         // TODO Dokka can't parse javadoc.io yet
         //    externalDocumentationLink {
-        //      url.set(URL("https://javadoc.io/doc/com.google.auto.service/auto-service-annotations/latest/index.html"))
+        //
+        // url.set(URL("https://javadoc.io/doc/com.google.auto.service/auto-service-annotations/latest/index.html"))
         //    }
       }
     }
