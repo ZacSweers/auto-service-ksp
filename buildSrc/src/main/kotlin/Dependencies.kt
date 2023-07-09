@@ -45,7 +45,7 @@ object Dependencies {
   }
 
   object Testing {
-    private const val kctVersion = "1.4.4"
+    private const val kctVersion = "1.5.0"
     const val compileTesting = "com.github.tschuchortdev:kotlin-compile-testing:$kctVersion"
     const val kspCompileTesting = "com.github.tschuchortdev:kotlin-compile-testing-ksp:$kctVersion"
     const val junit = "junit:junit:4.13.2"
