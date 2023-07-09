@@ -1,16 +1,16 @@
 Changelog
 =========
 
-Version 1.0.0
--------------
+1.0.0
+-----
 
 _2021-09-07_
 
 * Stable release!
 * Update to KSP `1.5.30-1.0.0`.
 
-Version 0.5.5
--------------
+0.5.5
+-----
 
 _2021-09-02_
 
@@ -19,16 +19,16 @@ _2021-09-02_
 
 Thanks to [@ganadist](https://github.com/ganadist) for contributing to this release!
 
-Version 0.5.4
--------------
+0.5.4
+-----
 
 _2021-08-27_
 
 * Update to KSP `1.5.30-1.0.0-beta08`.
 * Update to Kotlin `1.5.30`.
 
-Version 0.5.3
--------------
+0.5.3
+-----
 
 _2021-07-15_
 
@@ -38,31 +38,31 @@ _2021-07-15_
 * Update to KotlinPoet `1.9.0`.
 * Test against JDK 17 early access previews.
 
-Version 0.5.2
--------------
+0.5.2
+-----
 
 _2021-05-27_
 
 * Update to KSP `1.5.10-1.0.0-beta01`
 * Update to Kotlin `1.5.10`
 
-Version 0.5.1
--------------
+0.5.1
+-----
 
 _2021-05-13_
 
 * Update to KSP `1.5.0-1.0.0-alpha10`
 
-Version 0.5.0
--------------
+0.5.0
+-----
 
 _2021-04-29_
 
 * Update to KSP `1.5.0-1.0.0-alpha09`
 * Update Kotlin to `1.5.0`
 
-Version 0.4.2
--------------
+0.4.2
+-----
 
 _2021-04-22_
 
@@ -70,15 +70,15 @@ _2021-04-22_
 * (Internal) Switch to `SymbolProcessorProvider` API, which means KSP `1.4.32-1.0.0-alpha08` is the
   minimum required version!
 
-Version 0.4.1
--------------
+0.4.1
+-----
 
 _2021-04-22_
 
 Please skip this release and use 0.4.2
 
-Version 0.4.0
--------------
+0.4.0
+-----
 
 _2021-04-09_
 
@@ -86,30 +86,30 @@ _2021-04-09_
 * Update Kotlin to 1.4.32
 * Update AutoService to 1.0 stable
 
-Version 0.3.3
--------------
+0.3.3
+-----
 
 _2021-03-01_
 
 * Updated to KSP `1.4.30-1.0.0-alpha04`
 * Errors are now reported via KSP's error logger.
 
-Version 0.3.2
--------------
+0.3.2
+-----
 
 _2021-02-11_
 
 * Updated to KSP `1.4.30-1.0.0-alpha02`
 
-Version 0.3.1
--------------
+0.3.1
+-----
 
 _2021-01-11_
 
 * Updated to KSP `1.4.20-dev-experimental-20210111`
 
-Version 0.3.0
--------------
+0.3.0
+-----
 
 _2021-01-10_
 
@@ -124,16 +124,16 @@ Add `auto-service-ksp` and `auto-service-annotations` dependencies directly now:
   }
   ```
 
-Version 0.2.1
--------------
+0.2.1
+-----
 
 _2020-12-26_
 
 * Small Gradle bugfix for KSP `1.4.20-dev-experimental-20201222`'s new generated dirs location,
   which no longer includes a `src/` intermediate dir.
 
-Version 0.2.0
--------------
+0.2.0
+-----
 
 _2020-12-26_
 
@@ -148,8 +148,8 @@ https://github.com/google/ksp/releases/tag/1.4.20-dev-experimental-20201222
 * Kotlin `1.4.20`
 * Compatible with Gradle `6.8-rc-4`
 
-Version 0.1.2
--------------
+0.1.2
+-----
 
 _2020-11-10_
 
@@ -157,8 +157,8 @@ No functional changes, but updated the following dependencies:
 * KSP `1.4.10-dev-experimental-20201110`
 * Gradle `6.7`
 
-Version 0.1.1
--------------
+0.1.1
+-----
 
 _2020-10-25_
 
@@ -167,8 +167,8 @@ No functional changes, but updated the following dependencies:
 * Guava `30.0-jre`
 * KotlinPoet `1.7.2`
 
-Version 0.1.0
--------------
+0.1.0
+-----
 
 _2020-09-26_
 
