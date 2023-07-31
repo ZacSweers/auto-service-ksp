@@ -20,7 +20,7 @@ autoService-annotations = { module = "com.google.auto.service:auto-service-annot
 autoService-compiler = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
 autoService-ksp = "dev.zacsweers.autoservice:auto-service-ksp:1.1.0"
 
-guava = "com.google.guava:guava:32.1.1-jre"
+guava = "com.google.guava:guava:32.1.2-jre"
 
 kotlin-compilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 
