@@ -18,13 +18,12 @@ jobs:
         distribution: 'zulu'
         java-version: '21'
 
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+
     - name: Check
       id: gradle
-      uses: gradle/gradle-build-action@v2
-      with:
-        arguments: check
-        gradle-home-cache-cleanup: true
-        cache-read-only: false
+      run: ./gradlew check
 
   publish:
     runs-on: ubuntu-latest
