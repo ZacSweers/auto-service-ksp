@@ -21,16 +21,16 @@ import com.google.common.truth.Truth.assertThat
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import com.tschuchort.compiletesting.SourceFile
-import com.tschuchort.compiletesting.kspIncremental
+import com.tschuchort.compiletesting.configureKsp
 import com.tschuchort.compiletesting.kspSourcesDir
 import com.tschuchort.compiletesting.symbolProcessorProviders
 import com.tschuchort.compiletesting.useKsp2
+import java.io.File
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 import org.junit.runners.Parameterized.Parameters
-import java.io.File
 
 @OptIn(ExperimentalCompilerApi::class)
 @RunWith(Parameterized::class)
@@ -54,28 +54,19 @@ class AutoServiceSymbolProcessorTest(private val incremental: Boolean) {
         languageVersion = "1.9"
       }
       inheritClassPath = true
-      symbolProcessorProviders = listOf(AutoServiceSymbolProcessor.Provider())
-      kspIncremental = incremental
+      configureKsp(useKSP2) {
+        symbolProcessorProviders += AutoServiceSymbolProcessor.Provider()
+        incremental = this@AutoServiceSymbolProcessorTest.incremental
+      }
     }
   }
-
-  // TODO temporary until KSP2 testing supports classpath inheritance in alpha03
-  private val stubAnnotation = SourceFile.kotlin(
-    "AutoService.kt",
-    """
-    package com.google.auto.service
-    import kotlin.reflect.KClass
-
-    annotation class AutoService(val value: KClass<*>)
-    """
-  )
 
   @Test
   fun smokeTest() {
     val source =
-      SourceFile.kotlin(
-        "CustomCallable.kt",
-        """
+        SourceFile.kotlin(
+            "CustomCallable.kt",
+            """
       package test
       import com.google.auto.service.AutoService
       import java.util.concurrent.Callable
@@ -84,18 +75,14 @@ class AutoServiceSymbolProcessorTest(private val incremental: Boolean) {
       class CustomCallable : Callable<String> {
         override fun call(): String = "Hello world!"
       }
-    """
-      )
+    """)
 
-    val compilation =
-      newCompilation().apply {
-        sources = listOf(stubAnnotation, source)
-      }
+    val compilation = newCompilation().apply { sources = listOf(source) }
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     val generatedSourcesDir = compilation.kspSourcesDir
     val generatedFile =
-      File(generatedSourcesDir, "resources/META-INF/services/java.util.concurrent.Callable")
+        File(generatedSourcesDir, "resources/META-INF/services/java.util.concurrent.Callable")
     assertThat(generatedFile.exists()).isTrue()
     assertThat(generatedFile.readText()).isEqualTo("test.CustomCallable\n")
   }
@@ -103,9 +90,9 @@ class AutoServiceSymbolProcessorTest(private val incremental: Boolean) {
   @Test
   fun smokeTestForJava() {
     val source =
-      SourceFile.java(
-        "CustomCallable.java",
-        """
+        SourceFile.java(
+            "CustomCallable.java",
+            """
       package test;
       import com.google.auto.service.AutoService;
       import java.util.concurrent.Callable;
@@ -114,18 +101,14 @@ class AutoServiceSymbolProcessorTest(private val incremental: Boolean) {
       public class CustomCallable implements Callable<String> {
         @Override public String call() { return "Hello world!"; }
       }
-    """
-      )
+    """)
 
-    val compilation =
-      newCompilation().apply {
-        sources = listOf(stubAnnotation, source)
-      }
+    val compilation = newCompilation().apply { sources = listOf(source) }
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     val generatedSourcesDir = compilation.kspSourcesDir
     val generatedFile =
-      File(generatedSourcesDir, "resources/META-INF/services/java.util.concurrent.Callable")
+        File(generatedSourcesDir, "resources/META-INF/services/java.util.concurrent.Callable")
     assertThat(generatedFile.exists()).isTrue()
     assertThat(generatedFile.readText()).isEqualTo("test.CustomCallable\n")
   }

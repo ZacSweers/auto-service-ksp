@@ -1,6 +1,6 @@
 [versions]
 autoService = "1.1.1"
-kct = "0.5.0-alpha02"
+kct = "0.5.0-alpha03"
 kotlin = "2.0.0-Beta3"
 jdk = "21"
 jvmTarget = "11"
