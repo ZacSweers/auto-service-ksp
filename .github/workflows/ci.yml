@@ -20,7 +20,7 @@ jobs:
 
     - name: Check
       id: gradle
-      uses: gradle/gradle-build-action@v2
+      uses: gradle/gradle-build-action@v3
       with:
         arguments: check
         gradle-home-cache-cleanup: true
