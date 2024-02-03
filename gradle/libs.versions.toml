@@ -1,10 +1,10 @@
 [versions]
 autoService = "1.1.1"
-kct = "0.4.0"
-kotlin = "1.9.22"
+kct = "0.5.0-alpha02"
+kotlin = "2.0.0-Beta3"
 jdk = "21"
 jvmTarget = "11"
-ksp = "1.9.22-1.0.17"
+ksp = "2.0.0-Beta3-1.0.17"
 ktfmt = "0.47"
 
 [plugins]
@@ -28,6 +28,9 @@ kotlinpoet = "com.squareup:kotlinpoet:1.16.0"
 
 ksp = { module = "com.google.devtools.ksp:symbol-processing", version.ref = "ksp" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
+ksp-cli = { module = "com.google.devtools.ksp:symbol-processing-cmdline", version.ref = "ksp" }
+ksp-aa-embeddable = { module = "com.google.devtools.ksp:symbol-processing-aa-embeddable", version.ref = "ksp" }
+ksp-commonDeps = { module = "com.google.devtools.ksp:symbol-processing-common-deps", version.ref = "ksp" }
 
 # Only present to trigger automatic renovate updates
 ktfmt = { module = "com.facebook:ktfmt", version.ref = "ktfmt" }
