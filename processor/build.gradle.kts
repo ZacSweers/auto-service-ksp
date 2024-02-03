@@ -20,6 +20,15 @@ plugins {
   alias(libs.plugins.mavenPublish)
 }
 
+// It's not possible to test both KSP 1 and KSP 2 in the same compilation unit
+val testKsp2 = providers.systemProperty("kct.test.useKsp2").getOrElse("false").toBoolean()
+
+tasks.test {
+  if (testKsp2) {
+    systemProperty("kct.test.useKsp2", testKsp2)
+  }
+}
+
 dependencies {
   ksp(libs.autoService.ksp)
   compileOnly(libs.ksp.api)
@@ -28,11 +37,20 @@ dependencies {
   implementation(libs.kotlinpoet)
   implementation(libs.guava)
 
+  if (testKsp2) {
+    testImplementation(libs.ksp.aa.embeddable) {
+      exclude(group = "com.google.devtools.ksp", module = "common-deps")
+    }
+    testImplementation(libs.ksp.commonDeps)
+    testImplementation(libs.ksp.cli)
+  } else {
+    testImplementation(libs.ksp)
+  }
+
   testImplementation(libs.ksp.api)
   testImplementation(libs.truth)
   testImplementation(libs.junit)
   testImplementation(libs.kct.core)
-  testImplementation(libs.ksp)
   testImplementation(libs.kct.ksp)
   testImplementation(libs.kotlin.compilerEmbeddable)
 }

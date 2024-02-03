@@ -1,10 +1,28 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  # Only run push on main
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**/*.md'
+  # Always run on PRs
+  pull_request:
+    branches: [ main ]
+
+concurrency:
+  group: 'ci-${{ github.event.merge_group.head_ref || github.head_ref }}-${{ github.workflow }}'
+  cancel-in-progress: true
 
 jobs:
   build:
+    name: "KSP2 = ${{ matrix.ksp2 }}"
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ksp2: [ 'true', 'false' ]
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -23,7 +41,7 @@ jobs:
 
     - name: Check
       id: gradle
-      run: ./gradlew check
+      run: ./gradlew check -D kct.test.useKsp2=${{ matrix.ksp2 }}
 
   publish:
     runs-on: ubuntu-latest
