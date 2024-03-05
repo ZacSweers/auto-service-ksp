@@ -41,7 +41,7 @@ class AutoServiceSymbolProcessorTest(
 
   companion object {
     @JvmStatic
-    @Parameters(name = "incremental={0}")
+    @Parameters(name = "incremental={0},useKSP2={1}")
     fun data(): Collection<Array<Any>> {
       return listOf(
         arrayOf(true, false),
