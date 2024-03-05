@@ -34,17 +34,21 @@ import org.junit.runners.Parameterized.Parameters
 
 @OptIn(ExperimentalCompilerApi::class)
 @RunWith(Parameterized::class)
-class AutoServiceSymbolProcessorTest(private val incremental: Boolean) {
+class AutoServiceSymbolProcessorTest(
+  private val incremental: Boolean,
+  private val useKSP2: Boolean,
+) {
 
   companion object {
     @JvmStatic
     @Parameters(name = "incremental={0}")
     fun data(): Collection<Array<Any>> {
-      return listOf(arrayOf(true), arrayOf(false))
+      return listOf(
+        arrayOf(true, false),
+        arrayOf(false, true)
+      )
     }
   }
-
-  private val useKSP2 = System.getProperty("kct.test.useKsp2", "false").toBoolean()
 
   private fun newCompilation(): KotlinCompilation {
     return KotlinCompilation().apply {

@@ -17,12 +17,7 @@ concurrency:
 
 jobs:
   build:
-    name: "KSP2 = ${{ matrix.ksp2 }}"
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        ksp2: [ 'true', 'false' ]
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -41,7 +36,7 @@ jobs:
 
     - name: Check
       id: gradle
-      run: ./gradlew check -D kct.test.useKsp2=${{ matrix.ksp2 }}
+      run: ./gradlew check
 
   publish:
     runs-on: ubuntu-latest
