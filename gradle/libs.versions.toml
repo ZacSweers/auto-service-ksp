@@ -1,10 +1,10 @@
 [versions]
 autoService = "1.1.1"
-kct = "0.5.0-alpha05"
-kotlin = "2.0.0-Beta4"
+kct = "0.5.0-alpha06"
+kotlin = "2.0.0-Beta5"
 jdk = "21"
 jvmTarget = "11"
-ksp = "2.0.0-Beta4-1.0.18"
+ksp = "2.0.0-Beta5-1.0.19"
 ktfmt = "0.47"
 
 [plugins]
