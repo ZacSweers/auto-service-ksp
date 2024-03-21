@@ -1,10 +1,10 @@
 [versions]
 autoService = "1.1.1"
-kct = "0.4.0"
-kotlin = "1.9.23"
+kct = "0.5.0-alpha06"
+kotlin = "2.0.0-Beta5"
 jdk = "21"
 jvmTarget = "11"
-ksp = "1.9.23-1.0.19"
+ksp = "2.0.0-Beta5-1.0.19"
 ktfmt = "0.47"
 
 [plugins]
@@ -26,7 +26,6 @@ kotlin-compilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-emb
 
 kotlinpoet = "com.squareup:kotlinpoet:1.16.0"
 
-ksp = { module = "com.google.devtools.ksp:symbol-processing", version.ref = "ksp" }
 ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.ref = "ksp" }
 
 # Only present to trigger automatic renovate updates

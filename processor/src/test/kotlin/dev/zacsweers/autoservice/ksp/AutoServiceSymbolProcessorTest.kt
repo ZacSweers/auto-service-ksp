@@ -21,23 +21,44 @@ import com.google.common.truth.Truth.assertThat
 import com.tschuchort.compiletesting.KotlinCompilation
 import com.tschuchort.compiletesting.KotlinCompilation.ExitCode
 import com.tschuchort.compiletesting.SourceFile
-import com.tschuchort.compiletesting.kspIncremental
+import com.tschuchort.compiletesting.configureKsp
 import com.tschuchort.compiletesting.kspSourcesDir
 import com.tschuchort.compiletesting.symbolProcessorProviders
+import com.tschuchort.compiletesting.useKsp2
 import java.io.File
 import org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.junit.runners.Parameterized.Parameters
 
+@OptIn(ExperimentalCompilerApi::class)
 @RunWith(Parameterized::class)
-class AutoServiceSymbolProcessorTest(private val incremental: Boolean) {
+class AutoServiceSymbolProcessorTest(
+    private val incremental: Boolean,
+    private val useKSP2: Boolean,
+) {
 
   companion object {
     @JvmStatic
-    @Parameterized.Parameters(name = "incremental={0}")
+    @Parameters(name = "incremental={0},useKSP2={1}")
     fun data(): Collection<Array<Any>> {
-      return listOf(arrayOf(true), arrayOf(false))
+      return listOf(arrayOf(true, false), arrayOf(false, true))
+    }
+  }
+
+  private fun newCompilation(): KotlinCompilation {
+    return KotlinCompilation().apply {
+      if (useKSP2) {
+        useKsp2()
+      } else {
+        languageVersion = "1.9"
+      }
+      inheritClassPath = true
+      configureKsp(useKSP2) {
+        symbolProcessorProviders += AutoServiceSymbolProcessor.Provider()
+        incremental = this@AutoServiceSymbolProcessorTest.incremental
+      }
     }
   }
 
@@ -57,13 +78,7 @@ class AutoServiceSymbolProcessorTest(private val incremental: Boolean) {
       }
     """)
 
-    val compilation =
-        KotlinCompilation().apply {
-          sources = listOf(source)
-          inheritClassPath = true
-          symbolProcessorProviders = listOf(AutoServiceSymbolProcessor.Provider())
-          kspIncremental = incremental
-        }
+    val compilation = newCompilation().apply { sources = listOf(source) }
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     val generatedSourcesDir = compilation.kspSourcesDir
@@ -89,13 +104,7 @@ class AutoServiceSymbolProcessorTest(private val incremental: Boolean) {
       }
     """)
 
-    val compilation =
-        KotlinCompilation().apply {
-          sources = listOf(source)
-          inheritClassPath = true
-          symbolProcessorProviders = listOf(AutoServiceSymbolProcessor.Provider())
-          kspIncremental = incremental
-        }
+    val compilation = newCompilation().apply { sources = listOf(source) }
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     val generatedSourcesDir = compilation.kspSourcesDir
