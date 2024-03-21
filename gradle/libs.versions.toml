@@ -12,7 +12,7 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 binaryCompatibilityValidator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version = "0.14.0" }
 dokka = { id = "org.jetbrains.dokka", version = "1.9.20" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.27.0" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version = "0.28.0" }
 spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
 
 [libraries]
@@ -20,7 +20,7 @@ autoService-annotations = { module = "com.google.auto.service:auto-service-annot
 autoService-compiler = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
 autoService-ksp = "dev.zacsweers.autoservice:auto-service-ksp:1.1.0"
 
-guava = "com.google.guava:guava:33.0.0-jre"
+guava = "com.google.guava:guava:33.1.0-jre"
 
 kotlin-compilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 
