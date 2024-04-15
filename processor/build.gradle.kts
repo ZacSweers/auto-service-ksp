@@ -22,8 +22,8 @@ plugins {
 
 tasks.test {
   // KSP2 needs more memory to run
-  minHeapSize = "2048m"
-  maxHeapSize = "2048m"
+  minHeapSize = "1024m"
+  maxHeapSize = "1024m"
 }
 
 dependencies {
