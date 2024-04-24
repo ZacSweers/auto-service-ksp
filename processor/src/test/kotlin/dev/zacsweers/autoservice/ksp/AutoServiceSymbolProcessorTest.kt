@@ -104,4 +104,39 @@ class AutoServiceSymbolProcessorTest(private val incremental: Boolean) {
     assertThat(generatedFile.exists()).isTrue()
     assertThat(generatedFile.readText()).isEqualTo("test.CustomCallable\n")
   }
+
+  @Test
+  fun errorOnNoServiceInterfacesProvided() {
+    val source =
+        SourceFile.kotlin(
+            "CustomCallable.kt",
+            """
+        package test
+        import com.google.auto.service.AutoService
+        import java.util.concurrent.Callable
+
+        @AutoService
+        class CustomCallable : Callable<String> {
+            override fun call(): String = "Hello world!"
+        }
+      """
+                .trimIndent())
+
+    val compilation =
+        KotlinCompilation().apply {
+          sources = listOf(source)
+          inheritClassPath = true
+          symbolProcessorProviders = listOf(AutoServiceSymbolProcessor.Provider())
+          kspIncremental = incremental
+        }
+    val result = compilation.compile()
+    assertThat(result.exitCode).isEqualTo(ExitCode.COMPILATION_ERROR)
+    assertThat(result.messages)
+        .contains(
+            """
+                No service interfaces specified by @AutoService annotation!
+                You can provide them in annotation parameters: @AutoService(YourService::class)
+            """
+                .trimIndent())
+  }
 }

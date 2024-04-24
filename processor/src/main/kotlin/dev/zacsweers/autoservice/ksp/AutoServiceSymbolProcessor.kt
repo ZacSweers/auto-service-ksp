@@ -108,7 +108,14 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
               }
 
           if (providerInterfaces.isEmpty()) {
-            logger.error("No service interfaces provided for element!", providerImplementer)
+            val message =
+                """
+                No service interfaces specified by @AutoService annotation!
+                You can provide them in annotation parameters: @AutoService(YourService::class)
+              """
+                    .trimIndent()
+
+            logger.error(message, annotation)
           }
 
           for (providerType in providerInterfaces) {
