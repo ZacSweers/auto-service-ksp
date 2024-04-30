@@ -35,8 +35,8 @@ import org.junit.runners.Parameterized.Parameters
 @OptIn(ExperimentalCompilerApi::class)
 @RunWith(Parameterized::class)
 class AutoServiceSymbolProcessorTest(
-  private val incremental: Boolean,
-  private val useKSP2: Boolean,
+    private val incremental: Boolean,
+    private val useKSP2: Boolean,
 ) {
 
   companion object {
@@ -65,9 +65,9 @@ class AutoServiceSymbolProcessorTest(
   @Test
   fun smokeTest() {
     val source =
-      SourceFile.kotlin(
-        "CustomCallable.kt",
-        """
+        SourceFile.kotlin(
+            "CustomCallable.kt",
+            """
       package test
       import com.google.auto.service.AutoService
       import java.util.concurrent.Callable
@@ -77,14 +77,14 @@ class AutoServiceSymbolProcessorTest(
         override fun call(): String = "Hello world!"
       }
     """,
-      )
+        )
 
     val compilation = newCompilation().apply { sources = listOf(source) }
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     val generatedSourcesDir = compilation.kspSourcesDir
     val generatedFile =
-      File(generatedSourcesDir, "resources/META-INF/services/java.util.concurrent.Callable")
+        File(generatedSourcesDir, "resources/META-INF/services/java.util.concurrent.Callable")
     assertThat(generatedFile.exists()).isTrue()
     assertThat(generatedFile.readText()).isEqualTo("test.CustomCallable\n")
   }
@@ -92,9 +92,9 @@ class AutoServiceSymbolProcessorTest(
   @Test
   fun smokeTestForJava() {
     val source =
-      SourceFile.java(
-        "CustomCallable.java",
-        """
+        SourceFile.java(
+            "CustomCallable.java",
+            """
       package test;
       import com.google.auto.service.AutoService;
       import java.util.concurrent.Callable;
@@ -104,14 +104,14 @@ class AutoServiceSymbolProcessorTest(
         @Override public String call() { return "Hello world!"; }
       }
     """,
-      )
+        )
 
     val compilation = newCompilation().apply { sources = listOf(source) }
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.OK)
     val generatedSourcesDir = compilation.kspSourcesDir
     val generatedFile =
-      File(generatedSourcesDir, "resources/META-INF/services/java.util.concurrent.Callable")
+        File(generatedSourcesDir, "resources/META-INF/services/java.util.concurrent.Callable")
     assertThat(generatedFile.exists()).isTrue()
     assertThat(generatedFile.readText()).isEqualTo("test.CustomCallable\n")
   }
@@ -119,9 +119,9 @@ class AutoServiceSymbolProcessorTest(
   @Test
   fun errorOnNoServiceInterfacesProvided() {
     val source =
-      SourceFile.kotlin(
-        "CustomCallable.kt",
-        """
+        SourceFile.kotlin(
+            "CustomCallable.kt",
+            """
         package test
         import com.google.auto.service.AutoService
         import java.util.concurrent.Callable
@@ -131,19 +131,18 @@ class AutoServiceSymbolProcessorTest(
             override fun call(): String = "Hello world!"
         }
       """
-          .trimIndent(),
-      )
+                .trimIndent(),
+        )
 
     val compilation = newCompilation().apply { sources = listOf(source) }
     val result = compilation.compile()
     assertThat(result.exitCode).isEqualTo(ExitCode.COMPILATION_ERROR)
     assertThat(result.messages)
-      .contains(
-        """
+        .contains(
+            """
                 No service interfaces specified by @AutoService annotation!
                 You can provide them in annotation parameters: @AutoService(YourService::class)
             """
-          .trimIndent()
-      )
+                .trimIndent())
   }
 }
