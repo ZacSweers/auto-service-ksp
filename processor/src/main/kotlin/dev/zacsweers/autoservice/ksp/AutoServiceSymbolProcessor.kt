@@ -31,6 +31,7 @@ import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.validate
 import com.squareup.kotlinpoet.ClassName
 import java.io.IOException
 import java.util.SortedSet
@@ -82,8 +83,13 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
               return emptyList()
             }
 
-    resolver
-        .getSymbolsWithAnnotation(AUTO_SERVICE_NAME)
+    val symbols = resolver.getSymbolsWithAnnotation(AUTO_SERVICE_NAME)
+
+    val result = symbols.filter { !it.validate() }
+
+    symbols
+        .filterIsInstance<KSClassDeclaration>()
+        .filter { it.validate() }
         .filterIsInstance<KSClassDeclaration>()
         .forEach { providerImplementer ->
           val annotation =
@@ -136,7 +142,7 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
           }
         }
     generateAndClearConfigFiles()
-    return emptyList()
+    return result.toList()
   }
 
   private fun checkImplementer(
