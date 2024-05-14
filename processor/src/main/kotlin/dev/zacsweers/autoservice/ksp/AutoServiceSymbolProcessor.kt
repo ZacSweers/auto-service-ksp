@@ -85,11 +85,10 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
 
     val symbols = resolver.getSymbolsWithAnnotation(AUTO_SERVICE_NAME)
 
-    val result = symbols.filter { !it.validate() }
+    val result = symbols.filterIsInstance<KSClassDeclaration>().filterNot { isCorrectlyAnnotated(it, autoServiceType) }
+
 
     symbols
-        .filterIsInstance<KSClassDeclaration>()
-        .filter { it.validate() }
         .filterIsInstance<KSClassDeclaration>()
         .forEach { providerImplementer ->
           val annotation =
@@ -144,6 +143,26 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
     generateAndClearConfigFiles()
     return result.toList()
   }
+
+private fun isCorrectlyAnnotated(provider: KSClassDeclaration, autoServiceType: KSType): Boolean {
+    val annotation = provider.annotations.find { it.annotationType.resolve() == autoServiceType }
+    if (annotation == null) {
+        logger.error("@AutoService annotation not found", provider)
+        return false
+    }
+
+    try {
+        val argumentValue = annotation.arguments.find { it.name?.getShortName() == "value" }?.value
+        val providerInterfaces = argumentValue as? List<KSType> ?: listOf(argumentValue as KSType)
+        return providerInterfaces.isNotEmpty() && providerInterfaces.all { interfaceType ->
+            provider.getAllSuperTypes().any { it.isAssignableFrom(interfaceType) }
+        }
+    } catch (e: ClassCastException) {
+        logger.error("Invalid 'value' member in @AutoService annotation", annotation)
+        return false
+    }
+}
+
 
   private fun checkImplementer(
       providerImplementer: KSClassDeclaration,
