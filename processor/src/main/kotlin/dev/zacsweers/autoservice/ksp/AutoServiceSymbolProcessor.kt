@@ -144,24 +144,24 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
     return result.toList()
   }
 
-private fun isCorrectlyAnnotated(provider: KSClassDeclaration, autoServiceType: KSType): Boolean {
-    val annotation = provider.annotations.find { it.annotationType.resolve() == autoServiceType }
-    if (annotation == null) {
-        logger.error("@AutoService annotation not found", provider)
-        return false
-    }
-
-    try {
-        val argumentValue = annotation.arguments.find { it.name?.getShortName() == "value" }?.value
-        val providerInterfaces = argumentValue as? List<KSType> ?: listOf(argumentValue as KSType)
-        return providerInterfaces.isNotEmpty() && providerInterfaces.all { interfaceType ->
-            provider.getAllSuperTypes().any { it.isAssignableFrom(interfaceType) }
-        }
-    } catch (e: ClassCastException) {
-        logger.error("Invalid 'value' member in @AutoService annotation", annotation)
-        return false
-    }
-}
+  private fun isCorrectlyAnnotated(provider: KSClassDeclaration, autoServiceType: KSType): Boolean {
+      val annotation = provider.annotations.find { it.annotationType.resolve() == autoServiceType }
+      if (annotation == null) {
+          logger.error("@AutoService annotation not found", provider)
+          return false
+      }
+  
+      try {
+          val argumentValue = annotation.arguments.find { it.name?.getShortName() == "value" }?.value
+          val providerInterfaces = argumentValue as? List<KSType> ?: listOf(argumentValue as KSType)
+          return providerInterfaces.isNotEmpty() && providerInterfaces.all { interfaceType ->
+              provider.getAllSuperTypes().any { it.isAssignableFrom(interfaceType) }
+          }
+      } catch (e: ClassCastException) {
+          logger.error("Invalid 'value' member in @AutoService annotation", annotation)
+          return false
+      }
+  }
 
 
   private fun checkImplementer(
