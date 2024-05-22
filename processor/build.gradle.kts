@@ -35,6 +35,7 @@ dependencies {
   implementation(libs.guava)
 
   testImplementation(libs.junit)
+  testImplementation(libs.kotlin.compilerEmbeddable)
   testImplementation(libs.kct.core)
   testImplementation(libs.kct.ksp)
   testImplementation(libs.ksp.api)
