@@ -40,4 +40,5 @@ dependencies {
   testImplementation(libs.kct.ksp)
   testImplementation(libs.ksp.api)
   testImplementation(libs.truth)
+  testImplementation(libs.kotlinpoet.ksp)
 }

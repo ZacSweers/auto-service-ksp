@@ -82,6 +82,8 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
               return emptyList()
             }
 
+    val deferred = mutableListOf<KSAnnotated>()
+
     resolver
         .getSymbolsWithAnnotation(AUTO_SERVICE_NAME)
         .filterIsInstance<KSClassDeclaration>()
@@ -119,34 +121,51 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
           }
 
           for (providerType in providerInterfaces) {
-            val providerDecl = providerType.declaration.closestClassDeclaration()!!
-            if (checkImplementer(providerImplementer, providerType)) {
-              providers.put(
-                  providerDecl.toBinaryName(),
-                  providerImplementer.toBinaryName() to providerImplementer.containingFile!!)
-            } else {
-              val message =
-                  "ServiceProviders must implement their service provider interface. " +
-                      providerImplementer.qualifiedName +
-                      " does not implement " +
-                      providerDecl.qualifiedName
-              logger.error(message, providerImplementer)
+            if (providerType.isError) {
+              deferred += providerImplementer
               return@forEach
+            }
+            val providerDecl = providerType.declaration.closestClassDeclaration()!!
+            when (checkImplementer(providerImplementer, providerType)) {
+              ValidationResult.VALID -> {
+                providers.put(
+                    providerDecl.toBinaryName(),
+                    providerImplementer.toBinaryName() to providerImplementer.containingFile!!,
+                )
+              }
+              ValidationResult.INVALID -> {
+                val message =
+                    "ServiceProviders must implement their service provider interface. " +
+                        providerImplementer.qualifiedName +
+                        " does not implement " +
+                        providerDecl.qualifiedName
+                logger.error(message, providerImplementer)
+              }
+              ValidationResult.DEFERRED -> {
+                deferred += providerImplementer
+              }
             }
           }
         }
     generateAndClearConfigFiles()
-    return emptyList()
+    return deferred
   }
 
   private fun checkImplementer(
       providerImplementer: KSClassDeclaration,
-      providerType: KSType
-  ): Boolean {
+      providerType: KSType,
+  ): ValidationResult {
     if (!verify) {
-      return true
+      return ValidationResult.VALID
     }
-    return providerImplementer.getAllSuperTypes().any { it.isAssignableFrom(providerType) }
+    for (superType in providerImplementer.getAllSuperTypes()) {
+      if (superType.isAssignableFrom(providerType)) {
+        return ValidationResult.VALID
+      } else if (superType.isError) {
+        return ValidationResult.DEFERRED
+      }
+    }
+    return ValidationResult.INVALID
   }
 
   private fun generateAndClearConfigFiles() {
@@ -198,6 +217,12 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
 
     val simpleNames = typesString.split(".")
     return ClassName(pkgName, simpleNames)
+  }
+
+  private enum class ValidationResult {
+    VALID,
+    INVALID,
+    DEFERRED,
   }
 
   @AutoService(SymbolProcessorProvider::class)
