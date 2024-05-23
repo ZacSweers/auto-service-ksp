@@ -1,11 +1,11 @@
 [versions]
 autoService = "1.1.1"
 kct = "0.4.1"
-kotlin = "1.9.23"
+kotlin = "1.9.24"
 jdk = "21"
 jvmTarget = "11"
 kotlinpoet = "1.16.0"
-ksp = "1.9.23-1.0.20"
+ksp = "1.9.24-1.0.20"
 ktfmt = "0.49"
 
 [plugins]
@@ -21,7 +21,7 @@ autoService-annotations = { module = "com.google.auto.service:auto-service-annot
 autoService-compiler = { module = "com.google.auto.service:auto-service", version.ref = "autoService" }
 autoService-ksp = "dev.zacsweers.autoservice:auto-service-ksp:1.1.0"
 
-guava = "com.google.guava:guava:33.1.0-jre"
+guava = "com.google.guava:guava:33.2.0-jre"
 
 kotlin-compilerEmbeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 
