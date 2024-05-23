@@ -221,7 +221,7 @@ class AutoServiceSymbolProcessorTest(
         KotlinCompilation().apply {
           sources = listOf(generateAnnotation, source)
           inheritClassPath = true
-          symbolProcessorProviders =
+          symbolProcessorProviders +=
               listOf(AutoServiceSymbolProcessor.Provider(), TacoGenerator.Provider())
           kspIncremental = incremental
         }
