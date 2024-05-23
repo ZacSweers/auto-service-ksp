@@ -35,4 +35,5 @@ dependencies {
   testImplementation(libs.ksp)
   testImplementation(libs.kct.ksp)
   testImplementation(libs.kotlin.compilerEmbeddable)
+  testImplementation(libs.kotlinpoet.ksp)
 }

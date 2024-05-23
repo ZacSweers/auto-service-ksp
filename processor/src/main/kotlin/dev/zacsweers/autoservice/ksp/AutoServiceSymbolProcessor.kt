@@ -69,88 +69,91 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
    */
   override fun process(resolver: Resolver): List<KSAnnotated> {
     val autoServiceType =
-      resolver
-        .getClassDeclarationByName(resolver.getKSNameFromString(AUTO_SERVICE_NAME))
-        ?.asType(emptyList())
-        ?: run {
-          val message = "@AutoService type not found on the classpath, skipping processing."
-          if (verbose) {
-            logger.warn(message)
-          } else {
-            logger.info(message)
-          }
-          return emptyList()
-        }
+        resolver
+            .getClassDeclarationByName(resolver.getKSNameFromString(AUTO_SERVICE_NAME))
+            ?.asType(emptyList())
+            ?: run {
+              val message = "@AutoService type not found on the classpath, skipping processing."
+              if (verbose) {
+                logger.warn(message)
+              } else {
+                logger.info(message)
+              }
+              return emptyList()
+            }
 
     val deferred = mutableListOf<KSAnnotated>()
 
     resolver
-      .getSymbolsWithAnnotation(AUTO_SERVICE_NAME)
-      .filterIsInstance<KSClassDeclaration>()
-      .forEach { providerImplementer ->
-        val annotation =
-          providerImplementer.annotations.find { it.annotationType.resolve() == autoServiceType }
-            ?: run {
-              logger.error("@AutoService annotation not found", providerImplementer)
-              return@forEach
-            }
+        .getSymbolsWithAnnotation(AUTO_SERVICE_NAME)
+        .filterIsInstance<KSClassDeclaration>()
+        .forEach { providerImplementer ->
+          val annotation =
+              providerImplementer.annotations.find {
+                it.annotationType.resolve() == autoServiceType
+              }
+                  ?: run {
+                    logger.error("@AutoService annotation not found", providerImplementer)
+                    return@forEach
+                  }
 
-        val argumentValue = annotation.arguments.find { it.name?.getShortName() == "value" }!!.value
+          val argumentValue =
+              annotation.arguments.find { it.name?.getShortName() == "value" }!!.value
 
-        @Suppress("UNCHECKED_CAST")
-        val providerInterfaces =
-          try {
-            argumentValue as? List<KSType> ?: listOf(argumentValue as KSType)
-          } catch (exception: ClassCastException) {
-            logger.error("No 'value' member value found!", annotation)
-            return@forEach
-          }
+          @Suppress("UNCHECKED_CAST")
+          val providerInterfaces =
+              try {
+                argumentValue as? List<KSType> ?: listOf(argumentValue as KSType)
+              } catch (exception: ClassCastException) {
+                logger.error("No 'value' member value found!", annotation)
+                return@forEach
+              }
 
-        if (providerInterfaces.isEmpty()) {
-          val message =
-            """
+          if (providerInterfaces.isEmpty()) {
+            val message =
+                """
                 No service interfaces specified by @AutoService annotation!
                 You can provide them in annotation parameters: @AutoService(YourService::class)
               """
-              .trimIndent()
+                    .trimIndent()
 
-          logger.error(message, annotation)
-        }
-
-        for (providerType in providerInterfaces) {
-          if (providerType.isError) {
-            deferred += providerImplementer
-            return@forEach
+            logger.error(message, annotation)
           }
-          val providerDecl = providerType.declaration.closestClassDeclaration()!!
-          when (checkImplementer(providerImplementer, providerType)) {
-            ValidationResult.VALID -> {
-              providers.put(
-                providerDecl.toBinaryName(),
-                providerImplementer.toBinaryName() to providerImplementer.containingFile!!,
-              )
-            }
-            ValidationResult.INVALID -> {
-              val message =
-                "ServiceProviders must implement their service provider interface. " +
-                  providerImplementer.qualifiedName +
-                  " does not implement " +
-                  providerDecl.qualifiedName
-              logger.error(message, providerImplementer)
-            }
-            ValidationResult.DEFERRED -> {
+
+          for (providerType in providerInterfaces) {
+            if (providerType.isError) {
               deferred += providerImplementer
+              return@forEach
+            }
+            val providerDecl = providerType.declaration.closestClassDeclaration()!!
+            when (checkImplementer(providerImplementer, providerType)) {
+              ValidationResult.VALID -> {
+                providers.put(
+                    providerDecl.toBinaryName(),
+                    providerImplementer.toBinaryName() to providerImplementer.containingFile!!,
+                )
+              }
+              ValidationResult.INVALID -> {
+                val message =
+                    "ServiceProviders must implement their service provider interface. " +
+                        providerImplementer.qualifiedName +
+                        " does not implement " +
+                        providerDecl.qualifiedName
+                logger.error(message, providerImplementer)
+              }
+              ValidationResult.DEFERRED -> {
+                deferred += providerImplementer
+              }
             }
           }
         }
-      }
     generateAndClearConfigFiles()
     return deferred
   }
 
   private fun checkImplementer(
-    providerImplementer: KSClassDeclaration,
-    providerType: KSType,
+      providerImplementer: KSClassDeclaration,
+      providerType: KSType,
   ): ValidationResult {
     if (!verify) {
       return ValidationResult.VALID
@@ -179,7 +182,7 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
         log("Originating files: ${ksFiles.map(KSFile::fileName)}")
         val dependencies = Dependencies(true, *ksFiles.toTypedArray())
         codeGenerator.createNewFile(dependencies, "", resourceFile, "").bufferedWriter().use {
-          writer ->
+            writer ->
           for (service in allServices) {
             writer.write(service)
             writer.newLine()
@@ -225,6 +228,6 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
   @AutoService(SymbolProcessorProvider::class)
   public class Provider : SymbolProcessorProvider {
     override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
-      AutoServiceSymbolProcessor(environment)
+        AutoServiceSymbolProcessor(environment)
   }
 }
