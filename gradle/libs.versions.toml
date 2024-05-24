@@ -4,7 +4,7 @@ kct = "0.4.1"
 kotlin = "1.9.24"
 jdk = "21"
 jvmTarget = "11"
-kotlinpoet = "1.16.0"
+kotlinpoet = "1.17.0"
 ksp = "1.9.24-1.0.20"
 ktfmt = "0.49"
 
