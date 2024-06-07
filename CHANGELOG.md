@@ -1,6 +1,18 @@
 Changelog
 =========
 
+1.2.0
+-----
+
+_2024-06-07_
+
+- Update to Kotlin `2.0.0`.
+- Update to KSP `2.0.0-1.0.22`.
+- **Fix**: Support multi-round processing.
+- **Fix**: Improve error message when no service interfaces are specified.
+
+Special thanks to [@daisyliu618](https://github.com/daisyliu618) and [@lexa-diky](https://github.com/lexa-diky) for contributing to this release!
+
 1.1.0
 -----
 
