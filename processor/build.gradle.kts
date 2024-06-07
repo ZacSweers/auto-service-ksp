@@ -20,6 +20,12 @@ plugins {
   alias(libs.plugins.mavenPublish)
 }
 
+tasks.test {
+  // KSP2 needs more memory to run
+  minHeapSize = "1024m"
+  maxHeapSize = "1024m"
+}
+
 dependencies {
   ksp(libs.autoService.ksp)
   compileOnly(libs.ksp.api)
@@ -28,12 +34,11 @@ dependencies {
   implementation(libs.kotlinpoet)
   implementation(libs.guava)
 
+  testImplementation(libs.junit)
+  testImplementation(libs.kotlin.compilerEmbeddable)
+  testImplementation(libs.kct.core)
+  testImplementation(libs.kct.ksp)
   testImplementation(libs.ksp.api)
   testImplementation(libs.truth)
-  testImplementation(libs.junit)
-  testImplementation(libs.kct.core)
-  testImplementation(libs.ksp)
-  testImplementation(libs.kct.ksp)
-  testImplementation(libs.kotlin.compilerEmbeddable)
   testImplementation(libs.kotlinpoet.ksp)
 }
