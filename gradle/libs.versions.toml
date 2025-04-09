@@ -5,7 +5,7 @@ kotlin = "2.0.0"
 jdk = "21"
 jvmTarget = "11"
 kotlinpoet = "1.18.1"
-ksp = "2.0.0-1.0.23"
+ksp = "2.1.20-2.0.0"
 ktfmt = "0.50"
 
 [plugins]
