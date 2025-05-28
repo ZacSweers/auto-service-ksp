@@ -1,7 +1,7 @@
 [versions]
 autoService = "1.1.1"
 kct = "0.7.1"
-kotlin = "2.0.0"
+kotlin = "2.1.21"
 jdk = "21"
 jvmTarget = "11"
 kotlinpoet = "2.2.0"
