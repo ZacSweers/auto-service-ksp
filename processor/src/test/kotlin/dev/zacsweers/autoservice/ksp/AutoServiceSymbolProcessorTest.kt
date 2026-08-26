@@ -104,6 +104,48 @@ class AutoServiceSymbolProcessorTest(
   }
 
   @Test
+  fun smokeTestForObject() {
+    val source =
+        kotlin(
+            "CustomCallable.kt",
+            """
+      package test
+      import com.google.auto.service.AutoService
+      import java.util.concurrent.Callable
+
+      @AutoService(Callable::class)
+      object CustomCallable : Callable<String> {
+        override fun call(): String = "Hello world!"
+      }
+    """,
+        )
+
+    val compilation = newCompilation().apply { sources = listOf(source) }
+    val result = compilation.compile()
+    assertThat(result.exitCode).isEqualTo(ExitCode.OK)
+    val generatedSourcesDir = compilation.kspSourcesDir
+    val generatedFile =
+        File(generatedSourcesDir, "resources/META-INF/services/java.util.concurrent.Callable")
+    assertThat(generatedFile.exists()).isTrue()
+    assertThat(generatedFile.readText()).isEqualTo("test.CustomCallable_ServiceLoaderProxy\n")
+    val generatedProviderFile =
+        File(generatedSourcesDir, "kotlin/test/CustomCallable_ServiceLoaderProxy.kt")
+    assertThat(generatedProviderFile.exists()).isTrue()
+    assertThat(generatedProviderFile.readText())
+        .isEqualTo(
+            """
+      package test
+
+      import java.util.concurrent.Callable
+      import kotlin.String
+
+      internal class CustomCallable_ServiceLoaderProxy : Callable<String> by CustomCallable
+
+    """
+                .trimIndent())
+  }
+
+  @Test
   fun smokeTestForJava() {
     val source =
         SourceFile.java(
@@ -156,6 +198,33 @@ class AutoServiceSymbolProcessorTest(
             """
                 No service interfaces specified by @AutoService annotation!
                 You can provide them in annotation parameters: @AutoService(YourService::class)
+            """
+                .trimIndent())
+  }
+
+  @Test
+  fun errorKotlinObjectNoInterface() {
+    val source =
+        kotlin(
+            "CustomCallable.kt",
+            """
+        package test
+        import com.google.auto.service.AutoService
+        import java.util.concurrent.Callable
+
+        @AutoService(ArrayList::class)
+        object CustomCallable : ArrayList<String>()
+      """
+                .trimIndent(),
+        )
+
+    val compilation = newCompilation().apply { sources = listOf(source) }
+    val result = compilation.compile()
+    assertThat(result.exitCode).isEqualTo(ExitCode.COMPILATION_ERROR)
+    assertThat(result.messages)
+        .contains(
+            """
+                Kotlin objects are only supported by delegation, java.util.ArrayList must be an interface
             """
                 .trimIndent())
   }

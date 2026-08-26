@@ -31,7 +31,7 @@ dependencies {
   compileOnly(libs.ksp.api)
 
   implementation(libs.autoService.annotations)
-  implementation(libs.kotlinpoet)
+  implementation(libs.kotlinpoet.ksp)
   implementation(libs.guava)
 
   testImplementation(libs.junit)
@@ -40,5 +40,4 @@ dependencies {
   testImplementation(libs.kct.ksp)
   testImplementation(libs.ksp.api)
   testImplementation(libs.truth)
-  testImplementation(libs.kotlinpoet.ksp)
 }

@@ -27,11 +27,21 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessor
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.processing.SymbolProcessorProvider
+import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFile
 import com.google.devtools.ksp.symbol.KSType
+import com.google.devtools.ksp.symbol.KSTypeAlias
 import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.TypeName
+import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.ksp.toTypeName
+import com.squareup.kotlinpoet.ksp.toTypeParameterResolver
+import com.squareup.kotlinpoet.ksp.writeTo
 import java.io.IOException
 import java.util.SortedSet
 
@@ -53,7 +63,7 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
    * "com.google.apphosting.LocalRpcService" -> "com.google.apphosting.datastore.LocalDatastoreService"
    * ```
    */
-  private val providers: Multimap<String, Pair<String, KSFile>> = HashMultimap.create()
+  private val providers: Multimap<String, Spec> = HashMultimap.create()
 
   private val verify = environment.options["autoserviceKsp.verify"]?.toBoolean() == true
   private val verbose = environment.options["autoserviceKsp.verbose"]?.toBoolean() == true
@@ -125,20 +135,48 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
               deferred += providerImplementer
               return@forEach
             }
-            val providerDecl = providerType.declaration.closestClassDeclaration()!!
+
+            val providerDecl = providerType.asClass()
+
+            if (providerImplementer.classKind == ClassKind.OBJECT &&
+                providerDecl.classKind != ClassKind.INTERFACE) {
+              val message =
+                  "Kotlin objects are only supported by delegation, ${providerDecl.qualifiedName?.asString()} must be an interface"
+              logger.error(message, providerImplementer)
+              return@forEach
+            }
+
             when (checkImplementer(providerImplementer, providerType)) {
               ValidationResult.VALID -> {
+                val binaryName = providerImplementer.toBinaryName()
+                val ksFile = providerImplementer.containingFile!!
+
                 providers.put(
                     providerDecl.toBinaryName(),
-                    providerImplementer.toBinaryName() to providerImplementer.containingFile!!,
-                )
+                    when (providerImplementer.classKind) {
+                      ClassKind.OBJECT -> {
+                        val providerSupertype =
+                            providerImplementer.superTypes
+                                .firstOrNull { it.resolve().asClass() == providerDecl }
+                                ?.toTypeName(
+                                    providerImplementer.typeParameters.toTypeParameterResolver())
+
+                        Spec.WithProxy(
+                            binaryName,
+                            ksFile,
+                            providerSupertype ?: providerType.toTypeName(),
+                            providerImplementer.toClassName(),
+                            "${binaryName.replace('$', '_')}_ServiceLoaderProxy")
+                      }
+                      else -> Spec(binaryName, ksFile)
+                    })
               }
               ValidationResult.INVALID -> {
                 val message =
                     "ServiceProviders must implement their service provider interface. " +
-                        providerImplementer.qualifiedName +
+                        providerImplementer.qualifiedName?.asString() +
                         " does not implement " +
-                        providerDecl.qualifiedName
+                        providerDecl.qualifiedName?.asString()
                 logger.error(message, providerImplementer)
               }
               ValidationResult.DEFERRED -> {
@@ -150,6 +188,12 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
     generateAndClearConfigFiles()
     return deferred
   }
+
+  private tailrec fun KSType.asClass(): KSClassDeclaration =
+      when (val decl = declaration) {
+        !is KSTypeAlias -> decl.closestClassDeclaration()!!
+        else -> decl.type.resolve().asClass()
+      }
 
   private fun checkImplementer(
       providerImplementer: KSClassDeclaration,
@@ -170,15 +214,17 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
 
   private fun generateAndClearConfigFiles() {
     for (providerInterface in providers.keySet()) {
+      val foundImplementers = providers[providerInterface]
       val resourceFile = "META-INF/services/$providerInterface"
       log("Working on resource file: $resourceFile")
       try {
         val allServices: SortedSet<String> = Sets.newTreeSet()
-        val foundImplementers = providers[providerInterface]
-        val newServices: Set<String> = HashSet(foundImplementers.map { it.first })
+        val newServices: Set<String> =
+            HashSet(
+                foundImplementers.map { (it as? Spec.WithProxy)?.proxyName ?: it.binaryName })
         allServices.addAll(newServices)
         log("New service file contents: $allServices")
-        val ksFiles = foundImplementers.map { it.second }
+        val ksFiles = foundImplementers.map { it.ksFile }
         log("Originating files: ${ksFiles.map(KSFile::fileName)}")
         val dependencies = Dependencies(true, *ksFiles.toTypedArray())
         codeGenerator.createNewFile(dependencies, "", resourceFile, "").bufferedWriter().use {
@@ -191,6 +237,24 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
         log("Wrote to: $resourceFile")
       } catch (e: IOException) {
         logger.error("Unable to create $resourceFile, $e")
+      }
+
+      for (spec in foundImplementers.filterIsInstance<Spec.WithProxy>()) {
+        val className = ClassName.bestGuess(spec.proxyName)
+
+        try {
+          FileSpec.get(
+                  className.packageName,
+                  TypeSpec.classBuilder(className.simpleName)
+                      .addModifiers(KModifier.INTERNAL)
+                      .addSuperinterface(spec.providerType, CodeBlock.of("%T", spec.providerImpl))
+                      .build())
+              .writeTo(codeGenerator, aggregating = false, originatingKSFiles = listOf(spec.ksFile))
+
+          log("Wrote object provider: $className")
+        } catch (e: IOException) {
+          logger.error("Unable to create object provider for: $className, $e")
+        }
       }
     }
     providers.clear()
@@ -223,6 +287,19 @@ public class AutoServiceSymbolProcessor(environment: SymbolProcessorEnvironment)
     VALID,
     INVALID,
     DEFERRED,
+  }
+
+  private open class Spec(
+      val binaryName: String,
+      val ksFile: KSFile,
+  ) {
+    class WithProxy(
+        binaryName: String,
+        ksFile: KSFile,
+        val providerType: TypeName,
+        val providerImpl: ClassName,
+        val proxyName: String,
+    ) : Spec(binaryName, ksFile)
   }
 
   @AutoService(SymbolProcessorProvider::class)
